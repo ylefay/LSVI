@@ -1,0 +1,209 @@
+(base) onyxia@jupyter-python-gpu-228609-0:~/work/LSVI/LSVI/experiments/logisticRegression/pima_logistic_regression$ command time --verbose python time.py
+INFO:root:Function       <function time_gaussian at 0x7f1bb4100cc0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   1.5805183887481689s
+Median Time    0.9638471603393555s
+Min Time       0.9459934234619141s
+Max Time       4.068429231643677s
+Std Deviation  1.3908315129742197s
+Total Time     7.902591943740845s
+
+INFO:root:Function       <function time_gaussian_Nicolas_seq1 at 0x7f18d021f880> # N = 10^4
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   2.4263389110565186s
+Median Time    2.000624656677246s
+Min Time       1.9830098152160645s
+Max Time       4.107008695602417s
+Std Deviation  0.9398359276240136s
+Total Time     12.131694555282593s
+
+INFO:root:Function       <function time_gaussian_Nicolas_seq2 at 0x7f18d02951c0> # N = 10^4
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   1.7724379062652589s
+Median Time    1.7380681037902832s
+Min Time       1.6729516983032227s
+Max Time       1.8952629566192627s
+Std Deviation  0.09887113592552452s
+Total Time     8.862189531326294s
+
+point={'beta': array([0., 0., 0., 0., 0., 0., 0., 0., 0.])}
+
+No problems found
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+Fitting: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00 Average Loss = 393.02
+Finished [100%]: Average Loss = 393.02
+INFO:pymc.variational.inference:Finished [100%]: Average Loss = 393.02
+point={'beta': array([0., 0., 0., 0., 0., 0., 0., 0., 0.])}
+
+No problems found
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+Fitting: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00 Average Loss = 393.04
+Finished [100%]: Average Loss = 393.04
+INFO:pymc.variational.inference:Finished [100%]: Average Loss = 393.04
+point={'beta': array([0., 0., 0., 0., 0., 0., 0., 0., 0.])}
+
+No problems found
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+Fitting: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00 Average Loss = 393.02
+Finished [100%]: Average Loss = 393.02
+INFO:pymc.variational.inference:Finished [100%]: Average Loss = 393.02
+point={'beta': array([0., 0., 0., 0., 0., 0., 0., 0., 0.])}
+
+No problems found
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+Fitting: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00 Average Loss = 393.03
+Finished [100%]: Average Loss = 393.03
+INFO:pymc.variational.inference:Finished [100%]: Average Loss = 393.03
+point={'beta': array([0., 0., 0., 0., 0., 0., 0., 0., 0.])}
+
+No problems found
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+MAP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   0% 0:00:02 logp = -386.04, ||grad|| = 0.017674
+Fitting: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00 Average Loss = 393.04
+Finished [100%]: Average Loss = 393.04
+INFO:pymc.variational.inference:Finished [100%]: Average Loss = 393.04
+INFO:root:Function       <function time_gaussian_ADVI at 0x7f18d02b4540>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   5.854104852676391s
+Median Time    5.773375988006592s
+Min Time       5.496805191040039s
+Max Time       6.436511754989624s
+Std Deviation  0.348248737652404s
+Total Time     29.270524263381958s
+
+        Command being timed: "python time.py"
+        User time (seconds): 86.25
+        System time (seconds): 25.32
+        Percent of CPU this job got: 171%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 1:05.20
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 1507492
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 1044274
+        Voluntary context switches: 568782
+        Involuntary context switches: 1868
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 75760
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+
+
+INFO:root:Function       <function time_heuristic_gaussianMeanField_Nicolas_u10_fixed1em3 at 0x7fb6b01efa60>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   101.93914608955383s
+Median Time    101.14689540863037s
+Min Time       101.04589366912842s
+Max Time       104.73575472831726s
+Std Deviation  1.5798447448066881s
+Total Time     509.69573044776917s
+
+        Command being timed: "python time.py"
+        User time (seconds): 519.43
+        System time (seconds): 11.64
+        Percent of CPU this job got: 103%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 8:33.94
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 2362684
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 1124839
+        Voluntary context switches: 132871
+        Involuntary context switches: 2792
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 63152
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+
+ime.py
+INFO:root:Function       <function time_gaussianMeanField_bj at 0x7f433033dee0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   99.11265463829041s
+Median Time    98.52845239639282s
+Min Time       98.20894074440002s
+Max Time       101.25234031677246s
+Std Deviation  1.2437057356432066s
+Total Time     495.563273191452s
+
+        Command being timed: "python time.py"
+        User time (seconds): 123.12
+        System time (seconds): 20.17
+        Percent of CPU this job got: 28%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 8:19.57
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 3345064
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 4195286
+        Voluntary context switches: 133398
+        Involuntary context switches: 1137
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 62648
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+
+(lsvi) onyxia@jupyter-python-gpu-228609-0:~/work/LSVI/LSVI/experiments/logisticRegression/pima_logistic_regression$ python time.py
+INFO:root:Function       <function time_gaussian_Nicolas_seq1 at 0x7efef85f7920>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   4.344598913192749s
+Median Time    3.6004884243011475s
+Min Time       3.5697667598724365s
+Max Time       7.3354246616363525s
+Std Deviation  1.6720416939443337s
+Total Time     21.722994565963745s
+
+INFO:root:Function       <function time_gaussian_Nicolas_seq2 at 0x7efef8475260>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   3.4051965713500976s
+Median Time    3.3625986576080322s
+Min Time       3.354137420654297s
+Max Time       3.581826686859131s
+Std Deviation  0.09889750800421679s
+Total Time     17.02598285675049s
