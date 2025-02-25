@@ -1,0 +1,36 @@
+(lsvi) onyxia@jupyter-python-gpu-228609-0:~/work/LSVI/LSVI/experiments/syntheticLikelihood$ python time.py
+INFO:root:Function       <function time_heuristic_gaussian at 0x7fcb71695da0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   72.89838757514954s
+Median Time    71.63218474388123s
+Min Time       71.540287733078s
+Max Time       77.8260588645935s
+Std Deviation  2.7575006274282186s
+Total Time     364.4919378757477s
+
+INFO:root:Function       <function time_heuristic_truncated_gaussian at 0x7fcb7170a8e0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   137.58912329673768s
+Median Time    137.33792877197266s
+Min Time       137.1859941482544s
+Max Time       138.7225866317749s
+Std Deviation  0.6388669949462331s
+Total Time     687.9456164836884s
+
+INFO:root:Function       <function time_rwmh at 0x7fcb2039cae0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   268.1324610710144s
+Median Time    266.6176645755768s
+Min Time       266.4597210884094s
+Max Time       274.2817051410675s
+Std Deviation  3.440377922970291s
+Total Time     1340.662305355072s

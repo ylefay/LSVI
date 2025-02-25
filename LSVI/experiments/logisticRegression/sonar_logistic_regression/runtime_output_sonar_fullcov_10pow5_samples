@@ -1,0 +1,215 @@
+(lsvi) onyxia@jupyter-python-gpu-609227-0:~/work/YLEFAY/LSVI/LSVI/experiments/logisticRegression/sonar_logistic_regression$ command time --verbose python time.py
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+INFO:root:Function       <function time_gaussian_Nicolas_seq2 at 0x7fe3d61c1080>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   5.11367883682251s
+Median Time    4.57716965675354s
+Min Time       4.415876865386963s
+Max Time       7.395578861236572s
+Std Deviation  1.2781661016051107s
+Total Time     25.56839418411255s
+
+INFO:root:Function       <function time_heuristic_gaussian_Nicolas_u10 at 0x7fe200404d60>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   5.111789608001709s
+Median Time    4.986610651016235s
+Min Time       4.9647815227508545s
+Max Time       5.639005422592163s
+Std Deviation  0.29500918263368636s
+Total Time     25.558948040008545s
+
+INFO:root:Function       <function time_heuristic_gaussian_Nicolas_u1 at 0x7fe200404ea0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   5.185959959030152s
+Median Time    5.196758270263672s
+Min Time       4.963298797607422s
+Max Time       5.371952056884766s
+Std Deviation  0.1566466909609494s
+Total Time     25.929799795150757s
+
+        Command being timed: "python time.py"
+        User time (seconds): 94.70
+        System time (seconds): 11.20
+        Percent of CPU this job got: 127%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 1:23.19
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 3224152
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 1255523
+        Voluntary context switches: 254043
+        Involuntary context switches: 1339
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 92584
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+
+
+
+bose python time.py
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+INFO:root:Function       <function time_heuristic_gaussian_Nicolas_u1 at 0x7f7d5c7f4fe0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   5.6066834926605225s
+Median Time    4.955901145935059s
+Min Time       4.936912298202515s
+Max Time       7.9324867725372314s
+Std Deviation  1.3070523296764098s
+Total Time     28.033417463302612s
+
+        Command being timed: "python time.py"
+        User time (seconds): 39.61
+        System time (seconds): 8.85
+        Percent of CPU this job got: 143%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 0:33.73
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 3107636
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 1033573
+        Voluntary context switches: 122119
+        Involuntary context switches: 550
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 31864
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+
+ssion/sonar_logistic_regression$ command time --verbose python time.py
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+INFO:root:Function       <function time_gaussian_Nicolas_seq2 at 0x7f83fd1fd120>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   5.142098617553711s
+Median Time    4.494343996047974s
+Min Time       4.446056365966797s
+Max Time       7.575185298919678s
+Std Deviation  1.3647812905161216s
+Total Time     25.710493087768555s
+
+        Command being timed: "python time.py"
+        User time (seconds): 37.17
+        System time (seconds): 10.09
+        Percent of CPU this job got: 149%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 0:31.63
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 3109512
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 1
+        Minor (reclaiming a frame) page faults: 1005737
+        Voluntary context switches: 120287
+        Involuntary context switches: 2763
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 31888
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+
+(lsvi) onyxia@jupyter-python-gpu-609227-0:~/work/YLEFAY/LSVI/LSVI/experiments/logisticRegression/sonar_logistic_regression$ command time --verbose python time.py
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+INFO:root:Function       <function time_heuristic_gaussian_Nicolas_u10 at 0x7f1be8204d60>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   5.606770849227905s
+Median Time    4.959347724914551s
+Min Time       4.943475961685181s
+Max Time       7.999654531478882s
+Std Deviation  1.3410737726704969s
+Total Time     28.033854246139526s
+
+        Command being timed: "python time.py"
+        User time (seconds): 40.42
+        System time (seconds): 9.27
+        Percent of CPU this job got: 145%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 0:34.24
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 3105320
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 1024159
+        Voluntary context switches: 124575
+        Involuntary context switches: 675
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 31864
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
+
+
+INFO:pymc.variational.inference:Finished [100%]: Average Loss = 163.87
+INFO:root:Function       <function time_gaussian_ADVI at 0x7efdc8621800>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   11.346071910858154s
+Median Time    10.653538703918457s
+Min Time       10.545533418655396s
+Max Time       13.589414834976196s
+Std Deviation  1.2943071588333754s
+Total Time     56.73035955429077s
+
+        Command being timed: "python time.py"
+        User time (seconds): 56.92
+        System time (seconds): 68.17
+        Percent of CPU this job got: 199%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 1:02.64
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 3208784
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 1
+        Minor (reclaiming a frame) page faults: 1340307
+        Voluntary context switches: 65584
+        Involuntary context switches: 400096
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 2956048
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0

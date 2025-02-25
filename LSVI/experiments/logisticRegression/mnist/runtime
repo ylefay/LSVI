@@ -1,0 +1,72 @@
+(lsvi) onyxia@jupyter-python-gpu-228609-0:~/work/LSVI/LSVI/experiments/logisticRegression/mnist$ command time --verbose python time.py
+INFO:root:Function       <function time_heuristic_gaussianMeanField_Nicolas_u10_fixed1em3 at 0x7fe3b40bba60>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   101.86286387443542s
+Median Time    101.08776140213013s
+Min Time       101.00436305999756s
+Max Time       104.93752932548523s
+Std Deviation  1.721386414973631s
+Total Time     509.3143193721771s
+
+INFO:root:Function       <function time_heuristic_gaussianMeanField_Nicolas_u10_fixed1 at 0x7fe3c2a2c180>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   101.15471615791321s
+Median Time    101.04643273353577s
+Min Time       100.9974136352539s
+Max Time       101.63943457603455s
+Std Deviation  0.27253821158360225s
+Total Time     505.77358078956604s
+
+INFO:root:Function       <function time_gaussianMeanField_Nicolas_fixed1em3 at 0x7fe8c5511760>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   50.06000461578369s
+Median Time    49.979509592056274s
+Min Time       49.95668911933899s
+Max Time       50.40478253364563s
+Std Deviation  0.1931060641919584s
+Total Time     250.30002307891846s
+
+INFO:root:Function       <function time_gaussianMeanField_bj at 0x7fe3b40d1ee0>
+Args           ()
+Kwargs         {}
+Runs           5
+Workers        1
+Average Time   98.42337584495544s
+Median Time    98.3169355392456s
+Min Time       98.1842360496521s
+Max Time       98.78487658500671s
+Std Deviation  0.23446282283513348s
+Total Time     492.1168792247772s
+
+        Command being timed: "python time.py"
+        User time (seconds): 1389.58
+        System time (seconds): 26.16
+        Percent of CPU this job got: 80%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 29:21.49
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 3616900
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 2
+        Minor (reclaiming a frame) page faults: 6230061
+        Voluntary context switches: 312861
+        Involuntary context switches: 5599
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 248520
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
