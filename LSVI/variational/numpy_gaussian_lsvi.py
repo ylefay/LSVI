@@ -3,7 +3,6 @@ import jax.numpy as jnp
 import numpy as np
 import scipy.linalg as slinalg
 from scipy.stats import qmc
-from tqdm import tqdm
 
 from variational.utils import unvec, vec
 
@@ -59,7 +58,7 @@ def mean_field_gaussian_lsvi(tgt_log_density, upsilon_init, n_iter, n_samples, l
 
     vmapped_tgt_log_density = jax.vmap(tgt_log_density)
 
-    for i_iter in tqdm(range(1, n_iter + 1)):
+    for i_iter in range(1, n_iter + 1):
         lr = lr_schedule[i_iter - 1]
         current_upsilon = upsilons[i_iter]
         theta = current_upsilon[:-1]

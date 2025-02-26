@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "LSVI"
+version = "0.0.1"
+description = "Variational inference package with JAX."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Yvann Le Fay", email = "yvann.lefay@ensae.fr" },
+]
+
+dependencies = [
+    "jax>=0.4.3,<0.5", #levy-stable-jax is not yet compatible with jax>=0.5
+    "particles>=0.4", # running experiments for comparing with SMC
+    "pymc", # running experiments for comparing with ADVI
+    "blackjax", # running experiments for comparing with stochastic gradient descent
+    "levy-stable-jax", # required for the levy-stable implementation of LSVI, required by the Fowler's Toad displacement model
+]
+
+[tool.setuptools.packages]
+find = { }
+
+[project.optional-dependencies]
+test = [
+    "pytest", # testing
+    "scikit-learn", # benchmarking logistic regression on the MNIST dataset
+    "scipy", # required for QMC
+]
+

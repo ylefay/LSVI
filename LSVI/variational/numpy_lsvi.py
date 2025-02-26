@@ -1,5 +1,4 @@
 import numpy as np
-from tqdm import tqdm
 
 
 def get_residual(y, X, beta):
@@ -53,7 +52,7 @@ def lsvi(sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, 
         Xs = np.empty((n_iter, *_X.shape), dtype=_X.dtype)
         sampless = np.empty((n_iter, *_sample.shape), dtype=_sample.dtype)
 
-    for i_iter in tqdm(range(n_iter)):
+    for i_iter in range(n_iter):
         lr = lr_schedule[i_iter]
         target_residual = target_residual_schedule[i_iter]
         current_upsilon = upsilons[i_iter]
