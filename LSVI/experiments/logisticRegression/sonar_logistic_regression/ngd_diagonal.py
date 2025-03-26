@@ -12,7 +12,7 @@ OUTPUT_PATH = "./output"
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output_mean_field"):
+def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output_mean_field"):
     flipped_predictors = get_dataset(dataset="Sonar")
     N, dim = flipped_predictors.shape
 
@@ -30,8 +30,13 @@ def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output_mean_field")
     sanity = my_variational_family.sanity
     upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim))
 
-    res = ngd_on_mf_gaussian_kl(OP_key, tgt_log_density, upsilon_init, n_iter, n_samples,
+    @jax.vmap
+    def f(key):
+        res = ngd_on_mf_gaussian_kl(key, tgt_log_density, upsilon_init, n_iter, n_samples,
                         lr_schedule=lr, sanity=sanity)
+        return res
+
+    res = f(keys)
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
     desc = "SONAR dataset, mean-field Gaussian, NGD"
@@ -46,4 +51,6 @@ if __name__ == "__main__":
     n_samples = int(1e4)
     lr = 1 / jnp.arange(1, n_iter + 1)
     OP_key = jax.random.PRNGKey(0)
-    experiment(OP_key, n_iter, n_samples, lr, "./output_mean_field")
+    n_repetitions = 10
+    keys = jax.random.split(OP_key, n_repetitions)
+    experiment(keys, n_iter, n_samples, lr, "./output_mean_field")

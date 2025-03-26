@@ -11,7 +11,7 @@ OUTPUT_PATH = "./output"
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
+def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
     flipped_predictors = get_dataset()
     N, dim = flipped_predictors.shape
 
@@ -28,9 +28,13 @@ def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
 
     upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
 
-    res, res_all = lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+    @jax.vmap
+    def f(key):
+        res, res_all = lsvi(key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
                         lr_schedule=lr,
                         return_all=False)
+        return res, res_all
+    res, res_all = f(keys)
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
     desc = "PIMA dataset, standard initialization, full cov. Gaussian"
@@ -44,5 +48,7 @@ if __name__ == "__main__":
     n_iter = 100
     n_samples = int(1e4)
     lr = 1.0
+    n_repetitions = 1
     OP_key = jax.random.PRNGKey(0)
-    experiment(OP_key, n_iter, n_samples, lr, "./output")
+    keys = jax.random.split(OP_key, n_repetitions)
+    experiment(keys, n_iter, n_samples, lr, "./output")

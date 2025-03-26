@@ -19,6 +19,7 @@ dependencies = [
     "pymc", # running experiments for comparing with ADVI
     "blackjax", # running experiments for comparing with stochastic gradient descent
     "levy-stable-jax", # required for the levy-stable implementation of LSVI, required by the Fowler's Toad displacement model
+    "timeit-decorator", # required for benchmarking
 ]
 
 [tool.setuptools.packages]

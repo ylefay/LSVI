@@ -12,7 +12,7 @@ OUTPUT_PATH = "./output"
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
+def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
     flipped_predictors = get_dataset()
     N, dim = flipped_predictors.shape
 
@@ -30,8 +30,12 @@ def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
 
     upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
 
-    res = ngd_on_gaussian_kl(OP_key, tgt_log_density, upsilon_init, n_iter, n_samples,
+    @jax.vmap
+    def f(key):
+        return ngd_on_gaussian_kl(key, tgt_log_density, upsilon_init, n_iter, n_samples,
                         lr_schedule=lr, sanity=sanity)
+
+    res = f(keys)
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
     desc = "PIMA dataset, full cov. Gaussian, NGD"
@@ -46,5 +50,7 @@ if __name__ == "__main__":
     n_samples = int(1e4)
     lr = 1.0
     OP_key = jax.random.PRNGKey(0)
+    number_of_repetition = 1
+    keys = jax.random.split(OP_key, number_of_repetition)
     with jax.disable_jit(False):
-        experiment(OP_key, n_iter, n_samples, lr, "./output")
+        experiment(keys, n_iter, n_samples, lr, "./output")
