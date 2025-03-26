@@ -1,5 +1,3 @@
-from variational.ngd import ngd_on_gaussian_kl
-
 import pickle
 
 import jax
@@ -7,12 +5,13 @@ import jax.numpy as jnp
 
 from experiments.logisticRegression.utils import get_dataset, get_tgt_log_density
 from variational.exponential_family import GenericNormalDistribution, NormalDistribution
+from variational.ngd import ngd_on_gaussian_kl
 
 OUTPUT_PATH = "./output"
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
+def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
     flipped_predictors = get_dataset(dataset="Sonar")
     N, dim = flipped_predictors.shape
 
@@ -30,8 +29,13 @@ def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
 
     upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
 
-    res = ngd_on_gaussian_kl(OP_key, tgt_log_density, upsilon_init, n_iter, n_samples,
-                        lr_schedule=lr, sanity=sanity)
+    @jax.vmap
+    def f(key):
+        res = ngd_on_gaussian_kl(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+                                 lr_schedule=lr, sanity=sanity)
+        return res
+
+    res = f(keys)
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
     desc = "SONAR dataset, full-cov Gaussian, NGD"
@@ -46,4 +50,6 @@ if __name__ == "__main__":
     n_samples = int(1e4)
     lr = 1 / jnp.arange(1, n_iter + 1)
     OP_key = jax.random.PRNGKey(0)
-    experiment(OP_key, n_iter, n_samples, lr, "./output")
+    n_repetitions = 10
+    keys = jax.random.split(OP_key, n_repetitions)
+    experiment(keys, n_iter, n_samples, lr, "./output")

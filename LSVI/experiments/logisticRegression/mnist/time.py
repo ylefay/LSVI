@@ -16,7 +16,7 @@ jax.config.update("jax_enable_x64", True)
 OUTPUT_PATH = "./output_timeit"
 
 
-@timeit(runs=5, log_level=logging.INFO, detailed=True)
+@timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
 def time_heuristic_gaussianMeanField_Nicolas_u10_fixed1em3():
     n_iter = int(5e2)
     Seq_title = '1em3_u10'
@@ -30,7 +30,7 @@ def time_heuristic_gaussianMeanField_Nicolas_u10_fixed1em3():
                                         OP_key=OP_key, OUTPUT_PATH=OUTPUT_PATH)
 
 
-@timeit(runs=5, log_level=logging.INFO, detailed=True)
+@timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
 def time_heuristic_gaussianMeanField_Nicolas_u10_fixed1():
     n_iter = int(5e2)
     Seq_title = '1em3_u10'
@@ -44,7 +44,7 @@ def time_heuristic_gaussianMeanField_Nicolas_u10_fixed1():
                                         OP_key=OP_key, OUTPUT_PATH=OUTPUT_PATH)
 
 
-@timeit(runs=5, log_level=logging.INFO, detailed=True)
+@timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
 def time_gaussianMeanField_Nicolas_fixed1em3():
     n_iter = int(5e2)
     Seq_title = '1em3'
@@ -55,14 +55,14 @@ def time_gaussianMeanField_Nicolas_fixed1em3():
                               OP_key=OP_key, OUTPUT_PATH=OUTPUT_PATH)
 
 
-@timeit(runs=5, log_level=logging.INFO, detailed=True)
+@timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
 def time_gaussianMeanField_bj():
     N_iters = 500
     sgd = 1e-3
     num_samples = int(1e4)
     gaussianMeanField_ADVI_blackjax(N_iters, num_samples, sgd, OUTPUT_PATH=OUTPUT_PATH)
 
-@timeit(runs=5, log_level=logging.INFO, detailed=True)
+@timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
 def time_ngd_diagonal():
     n_iter = int(5e2)
     n_samples = int(1e4)

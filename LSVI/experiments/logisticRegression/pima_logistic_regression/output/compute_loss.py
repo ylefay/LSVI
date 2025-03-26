@@ -47,16 +47,18 @@ if __name__ == "__main__":
 
     for idx, my_pkl in enumerate(PKLs):
         if PKL_titles[idx] not in EXCLUDED_PICKLES:
-            size_pkl = my_pkl['res'].shape[0]
-            loss = jnp.zeros(size_pkl)
-            keys = jax.random.split(OP_key, size_pkl // SIZE_vmap + 1)
-            for k in range(size_pkl // SIZE_vmap):
-                keys2 = jax.random.split(keys[k], SIZE_vmap)
-                loss = loss.at[k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl)].set(
-                    wrapper_gaussian_loss(keys2, my_pkl['res'][k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl), :-1]))
-            if size_pkl % SIZE_vmap != 0:
-                keys2 = jax.random.split(keys[-1], size_pkl % SIZE_vmap)
-                loss = loss.at[-(size_pkl % SIZE_vmap):].set(
-                    wrapper_gaussian_loss(keys2, my_pkl['res'][-(size_pkl % SIZE_vmap):, :-1]))
+            size_pkl = my_pkl['res'].shape[1]
+            n_repeat = my_pkl['res'].shape[0]
+            loss = jnp.zeros((n_repeat, size_pkl))
+            keys = jax.random.split(OP_key, n_repeat * (size_pkl // SIZE_vmap + 1)).reshape((n_repeat, (size_pkl // SIZE_vmap + 1),  -1))
+            for repeat in range(n_repeat):
+                for k in range(size_pkl // SIZE_vmap):
+                    keys2 = jax.random.split(keys[repeat, k], SIZE_vmap)
+                    loss = loss.at[repeat, k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl)].set(
+                        wrapper_gaussian_loss(keys2, my_pkl['res'][repeat, k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl), :-1]))
+                if size_pkl % SIZE_vmap != 0:
+                    keys2 = jax.random.split(keys[repeat, -1], size_pkl % SIZE_vmap)
+                    loss = loss.at[repeat, -(size_pkl % SIZE_vmap):].set(
+                        wrapper_gaussian_loss(keys2, my_pkl['res'][repeat, -(size_pkl % SIZE_vmap):, :-1]))
             with open(f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss.pkl", "wb") as f:
                 pickle.dump(loss, f)

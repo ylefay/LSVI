@@ -8,7 +8,7 @@ from experiments.logisticRegression.utils import get_dataset
 OUTPUT_PATH = "./output_mfg"
 
 
-def experiment(n_iter, n_samples=None, OUTPUT_PATH="./output"):
+def experiment(n_repeat, n_iter, n_samples=None, OUTPUT_PATH="./output"):
     flipped_predictors, response = get_dataset(dataset="Sonar", flip=False)
     dim = flipped_predictors.shape[1]
     response += 1
@@ -36,6 +36,7 @@ def experiment(n_iter, n_samples=None, OUTPUT_PATH="./output"):
 if __name__ == "__main__":
     N_iters = [1e5]
     n_samples = None
+    n_repetitions = 1
     for n_iter in N_iters:
         print(n_iter)
-        experiment(int(n_iter), n_samples)
+        experiment(n_repetitions, int(n_iter), n_samples)

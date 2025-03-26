@@ -13,7 +13,7 @@ OP_key = jax.random.PRNGKey(4)
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(n_samples=100000, n_iter=100, lr_schedule=None, title_seq="Seq", OP_key=OP_key, OUTPUT_PATH="./output"):
+def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, title_seq="Seq", OUTPUT_PATH="./output"):
     flipped_predictors = get_dataset(dataset="Sonar")
     N, dim = flipped_predictors.shape
 
@@ -36,10 +36,16 @@ def experiment(n_samples=100000, n_iter=100, lr_schedule=None, title_seq="Seq", 
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr_schedule}
     desc = "PIMA dataset, standard initialization, full cov. Gaussian, Nicolas"
+
+    @jax.vmap
+    def f(key):
+        res, res_all = gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples, lr_schedule=lr_schedule,
+                                     return_all=False)
+        return res, res_all
+
     if not os.path.exists(
             f"{OUTPUT_PATH}/gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl"):
-        res, res_all = gaussian_lsvi(OP_key, tgt_log_density, upsilon_init, n_iter, n_samples, lr_schedule=lr_schedule,
-                                     return_all=False)
+        res, res_all = f(keys)
         with open(
                 f"{OUTPUT_PATH}/gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl",
                 "wb") as f:
@@ -51,6 +57,9 @@ if __name__ == "__main__":
     Seq_titles = ['Seq2']
     interval = jnp.arange(1, n_iter + 1)
 
+    n_repetitions = 10
+    keys = jax.random.split(OP_key, n_repetitions)
+
     Seq = [1 / interval]
     Ns = [1e5]
     for idx, title in enumerate(Seq_titles):
@@ -59,5 +68,5 @@ if __name__ == "__main__":
             for key in range(10):
                 print(key)
                 print(n_samples)
-                experiment(n_samples=int(n_samples), n_iter=n_iter, lr_schedule=Seq[idx], title_seq=title,
-                           OP_key=jax.random.PRNGKey(key), OUTPUT_PATH=OUTPUT_PATH)
+                experiment(keys, n_samples=int(n_samples), n_iter=n_iter, lr_schedule=Seq[idx], title_seq=title,
+                           OUTPUT_PATH=OUTPUT_PATH)
