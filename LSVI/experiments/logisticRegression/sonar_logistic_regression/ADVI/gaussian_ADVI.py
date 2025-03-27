@@ -3,7 +3,6 @@ import pickle
 import numpy as np
 import pymc as pm
 
-from experiments.logisticRegression.sonar_logistic_regression.time import n_repetitions
 from experiments.logisticRegression.utils import get_dataset
 
 OUTPUT_PATH = "./output"

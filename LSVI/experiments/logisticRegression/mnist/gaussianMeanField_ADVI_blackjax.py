@@ -15,7 +15,7 @@ OP_key = jax.random.PRNGKey(0)
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(num_iter, num_samples, sgd=1e-3, OUTPUT_PATH="./output_mean_field"):
+def experiment(keys, num_iter, num_samples, sgd=1e-3, OUTPUT_PATH="./output_mean_field"):
     flipped_predictors = mnist_dataset(return_test=False)
     dim = flipped_predictors.shape[1]
 
@@ -30,6 +30,7 @@ def experiment(num_iter, num_samples, sgd=1e-3, OUTPUT_PATH="./output_mean_field
     # initial_state = {"mu": jnp.zeros(dim), "rho": jnp.zeros(dim)}
     initial_state = res.init(position=jnp.zeros(dim))
 
+    @jax.vmap
     def inference_loop(rng_key):
         @jax.jit
         def one_step(state, rng_key):
@@ -46,7 +47,7 @@ def experiment(num_iter, num_samples, sgd=1e-3, OUTPUT_PATH="./output_mean_field
 
         return mus, rhos
 
-    states = inference_loop(OP_key)
+    states = inference_loop(keys)
     with open(f"{OUTPUT_PATH}/res_mfg_advi_blackjax_{num_iter}_{num_samples}_{sgd}.pkl", "wb") as f:
         pickle.dump(
             {'desc': "MNIST dataset, mean field Gaussian ADVI blackjax", 'num_iter': num_iter,
@@ -58,6 +59,8 @@ if __name__ == "__main__":
     N_iters = [500]
     sgd = 1e-3
     num_samples = int(1e4)
+    n_repetitions = 2
+    keys = jax.random.split(OP_key, n_repetitions)
     for num_iter in N_iters:
         print(num_iter)
-        experiment(int(num_iter), num_samples, sgd)
+        experiment(keys, int(num_iter), num_samples, sgd)
