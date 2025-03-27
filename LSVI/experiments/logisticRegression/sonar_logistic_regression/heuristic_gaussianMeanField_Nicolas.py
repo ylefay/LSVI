@@ -48,19 +48,18 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
 
 
 if __name__ == "__main__":
-    n_iter = 100
-    Seq_titles = ['Seq1']
+    n_iter = 1000
+    Seq_titles = ['Seq1u1', 'Seq1u10']
     interval = jnp.arange(1, n_iter + 1)
-    Seq = [jnp.ones(n_iter)]
+    Seq = [jnp.ones(n_iter), jnp.ones(n_iter)]
     Ns = [1e4]
     n_repetitions = 10
+    target_residual_schedules = [jnp.full(n_iter, 1), jnp.full(n_iter, 10)]
+
     keys = jax.random.split(OP_key, n_repetitions)
     for idx, title in enumerate(Seq_titles):
         print(title)
         for n_samples in Ns:
-            target_residual_schedule = jnp.full(n_iter, 1)
             for key in range(1):
-                print(key)
-                print(n_samples)
                 experiment(keys, n_samples=int(n_samples), n_iter=n_iter, lr_schedule=Seq[idx],
-                           target_residual_schedule=target_residual_schedule, title_seq=title, OUTPUT_PATH=OUTPUT_PATH)
+                       target_residual_schedule=target_residual_schedules[idx], title_seq=title, OUTPUT_PATH=OUTPUT_PATH)

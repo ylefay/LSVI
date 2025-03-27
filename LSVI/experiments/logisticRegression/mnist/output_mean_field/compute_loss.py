@@ -51,8 +51,8 @@ if __name__ == "__main__":
                 size_pkl =my_pkl['res'].shape[1]
                 n_repeat = my_pkl['res'].shape[0]
                 loss = jnp.zeros((n_repeat, size_pkl))
-                keys = jax.random.split(OP_key, n_repeat *( size_pkl +1 )).reshape((n_repeat, size_pkl +1, -1))
+                keys = jax.random.split(OP_key, n_repeat *( size_pkl  )).reshape((n_repeat, size_pkl, -1))
                 for repeat in range(n_repeat):
-                    loss = loss.at[repeat].set(wrapper_gaussian_loss(keys, my_pkl['res'][repeat, :, :-1]))
+                    loss = loss.at[repeat].set(wrapper_gaussian_loss(keys[repeat], my_pkl['res'][repeat, :, :-1]))
                 with open(f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss.pkl", "wb") as f:
                     pickle.dump(loss, f)
