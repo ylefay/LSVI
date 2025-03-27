@@ -11,9 +11,10 @@ from variational.exponential_family import GenericMeanFieldNormalDistribution, M
 
 OUTPUT_PATH = "./output"
 jax.config.update("jax_enable_x64", True)
+OP_key = jax.random.PRNGKey(0)
 
 
-def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output_mean_field"):
+def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output_mean_field"):
     flipped_predictors = mnist_dataset(return_test=False)
     N, dim = flipped_predictors.shape
 
@@ -32,8 +33,13 @@ def experiment(OP_key, n_iter, n_samples, lr, OUTPUT_PATH="./output_mean_field")
 
     upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
 
-    res = ngd(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+    @jax.vmap
+    def f(key):
+        res = ngd(key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
                         lr_schedule=lr, sanity=sanity)
+        return res
+
+    res = f(keys)
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
     desc = "MNIST dataset, mean-field Gaussian, NGD"
@@ -47,5 +53,6 @@ if __name__ == "__main__":
     n_iter = int(5e2)
     n_samples = int(1e4)
     lr = 1.0
-    OP_key = jax.random.PRNGKey(0)
-    experiment(OP_key, n_iter, n_samples, lr, "./output_mean_field")
+    n_repetitions = 1
+    keys = jax.random.split(OP_key, n_repetitions)
+    experiment(keys, n_iter, n_samples, lr, "./output_mean_field")

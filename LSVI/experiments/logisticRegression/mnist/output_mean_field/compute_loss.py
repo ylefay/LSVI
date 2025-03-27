@@ -48,7 +48,11 @@ if __name__ == "__main__":
     for idx, my_pkl in enumerate(PKLs):
         if PKL_titles[idx] not in EXCLUDED_PICKLES:
             if not os.path.exists(f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss.pkl"):
-                keys = jax.random.split(OP_key, len(my_pkl['res'][:, :-1]))
-                loss = wrapper_gaussian_loss(keys, my_pkl['res'][:, :-1])
+                size_pkl =my_pkl['res'].shape[1]
+                n_repeat = my_pkl['res'].shape[0]
+                loss = jnp.zeros((n_repeat, size_pkl))
+                keys = jax.random.split(OP_key, n_repeat *( size_pkl +1 )).reshape((n_repeat, size_pkl +1, -1))
+                for repeat in range(n_repeat):
+                    loss = loss.at[repeat].set(wrapper_gaussian_loss(keys, my_pkl['res'][repeat, :, :-1]))
                 with open(f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss.pkl", "wb") as f:
                     pickle.dump(loss, f)

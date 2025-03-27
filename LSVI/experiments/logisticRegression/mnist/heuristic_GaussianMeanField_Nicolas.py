@@ -14,8 +14,7 @@ OP_key = jax.random.PRNGKey(4)
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(n_samples=100000, n_iter=100, lr_schedule=None, target_residual_schedule=None, title_seq="Seq",
-               OP_key=OP_key, OUTPUT_PATH="./output"):
+def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_residual_schedule=None, title_seq="Seq", OUTPUT_PATH="./output"):
     flipped_predictors = mnist_dataset(return_test=False)
     N, dim = flipped_predictors.shape
 
@@ -31,13 +30,19 @@ def experiment(n_samples=100000, n_iter=100, lr_schedule=None, target_residual_s
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr_schedule, 'residual': target_residual_schedule}
     desc = "MNIST dataset, heuristic, mf. Gaussian, Nicolas"
+
+    @jax.vmap
+    def f(key):
+        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+                                                lr_schedule=lr_schedule,
+                                                target_residual_schedule=target_residual_schedule,
+                                                return_all=False)
+        return res, res_all
+
     if not os.path.exists(
             f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl"):
         with jax.disable_jit(False):
-            res, res_all = mean_field_gaussian_lsvi(OP_key, tgt_log_density, upsilon_init, n_iter, n_samples,
-                                                    lr_schedule=lr_schedule,
-                                                    target_residual_schedule=target_residual_schedule,
-                                                    return_all=False)
+            res, res_all = f(keys)
         with open(
                 f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl",
                 "wb") as f:
@@ -50,13 +55,14 @@ if __name__ == "__main__":
     interval = jnp.arange(1, n_iter + 1)
     Seq = [jnp.ones(n_iter), jnp.ones(n_iter) * 1e-3]
     Ns = [1e4]
+    n_repetitions = 1
     for idx, title in enumerate(Seq_titles):
         print(title)
         for n_samples in Ns:
             target_residual_schedule = jnp.full(n_iter, 10)
             for key in range(1):
+                keys = jax.random.split(jax.random.PRNGKey(key), n_repetitions)
                 print(key)
                 print(n_samples)
-                experiment(n_samples=int(n_samples), n_iter=n_iter, lr_schedule=Seq[idx],
-                           target_residual_schedule=target_residual_schedule, title_seq=title,
-                           OP_key=jax.random.PRNGKey(key), OUTPUT_PATH=OUTPUT_PATH)
+                experiment(keys, n_samples=int(n_samples), n_iter=n_iter, lr_schedule=Seq[idx],
+                           target_residual_schedule=target_residual_schedule, title_seq=title, OUTPUT_PATH=OUTPUT_PATH)
