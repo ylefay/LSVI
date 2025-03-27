@@ -66,17 +66,18 @@ if __name__ == "__main__":
                              tgt_log_density=tgt_log_density, n_samples_for_loss=int(1e4))
 
 
-    skip = 100
+    skip = 10
 
     for idx, my_pkl in enumerate(PKLs):
         if PKL_titles[idx] not in EXCLUDED_PICKLES:
             n_repetitions = my_pkl['means'].shape[0]
-            size_pkl = my_pkl['means'].shape[1]
+            #size_pkl = my_pkl['means'].shape[1]
+            size_pkl = my_pkl['means'][0][::skip].shape[0]
             loss = jnp.zeros((n_repetitions, size_pkl))
             keys = jax.random.split(OP_key, (size_pkl // SIZE_vmap + 1) * n_repetitions).reshape(
                 (n_repetitions, size_pkl // SIZE_vmap + 1, -1))
             for repeat in range(n_repetitions):
-                my_means = jnp.array(my_pkl['means'][repeat])[::skip, jnp.newaxis]
+                my_means = jnp.array(my_pkl['means'][repeat][::skip])
                 my_covs = jnp.array(my_pkl['covs'][repeat][::skip])
                 my_meanscovs = jnp.concatenate([my_means, my_covs], axis=1)
                 for k in range(my_means.shape[0] // SIZE_vmap):

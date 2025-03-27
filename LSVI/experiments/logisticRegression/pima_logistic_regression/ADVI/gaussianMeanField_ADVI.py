@@ -18,7 +18,7 @@ def experiment(n_repeat, n_iter, n_samples=None):
     list_cov = np.zeros((n_repeat, dim, dim))
     list_hist = np.zeros((n_repeat, n_iter))
     list_means = np.zeros((n_repeat, n_iter, dim))
-    list_covs = np.zeros((n_repeat, n_iter, dim, dim))
+    list_covs = np.zeros((n_repeat, n_iter, dim))
 
     def _experiment():
         with pm.Model() as logistic_model:
@@ -52,7 +52,7 @@ def experiment(n_repeat, n_iter, n_samples=None):
 if __name__ == "__main__":
     N_iters = [2 * 10e3]
     n_samples = None
-    n_repetitions = 2
+    n_repetitions = 1
     for n_iter in N_iters:
         print(n_iter)
-        experiment(n_repetitions, int(n_iter), n_samples)
+        experiment(n_repetitions, int(n_iter), n_samples, OUTPUT_PATH)
