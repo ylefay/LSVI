@@ -13,6 +13,7 @@ OP_key = jax.random.PRNGKey(0)
 jax.config.update("jax_enable_x64", True)
 OUTPUT = "./losses"
 EXCLUDED_PICKLES = []
+SIZE_vmap = 100
 
 """
 Compute the opposite of the ELBO for the Gaussian variational family
@@ -46,14 +47,26 @@ if __name__ == "__main__":
         return gaussian_loss(OP_key=key, theta=theta, gaussian=mfg_gaussian,
                              tgt_log_density=lambda x: tgt_log_density(key, x), n_samples_for_loss=int(1e4))
 
+
+    skip = 1
+
     for idx, my_pkl in enumerate(PKLs):
         if PKL_titles[idx] not in EXCLUDED_PICKLES:
             if not os.path.exists(f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss.pkl"):
                 size_pkl = my_pkl['res'].shape[1]
                 n_repeat = my_pkl['res'].shape[0]
                 loss = jnp.zeros((n_repeat, size_pkl))
-                keys = jax.random.split(OP_key, n_repeat * (size_pkl)).reshape((n_repeat, size_pkl, -1))
+                keys = jax.random.split(OP_key, (size_pkl // SIZE_vmap + 1) * n_repeat).reshape(
+                    (n_repeat, (size_pkl // SIZE_vmap + 1), -1))
                 for repeat in range(n_repeat):
-                    loss = loss.at[repeat].set(wrapper_gaussian_loss(keys[repeat], my_pkl['res'][repeat, :, :-1]))
+                    for k in range(size_pkl // SIZE_vmap):
+                        keys2 = jax.random.split(keys[repeat, k], SIZE_vmap)
+                        loss = loss.at[repeat, k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl)].set(
+                            wrapper_gaussian_loss(keys2, my_pkl['res'][repeat,
+                                                         k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl), :-1]))
+                    if size_pkl % SIZE_vmap != 0:
+                        keys2 = jax.random.split(keys[repeat, -1], size_pkl % SIZE_vmap)
+                        loss = loss.at[repeat, -(size_pkl % SIZE_vmap):].set(
+                            wrapper_gaussian_loss(keys2, my_pkl['res'][repeat, -(size_pkl % SIZE_vmap):, :-1]))
                 with open(f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss.pkl", "wb") as f:
                     pickle.dump(loss, f)
