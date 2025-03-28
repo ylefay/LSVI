@@ -136,9 +136,9 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
 
 if __name__ == "__main__":
     n_iter = 1000
-    Seq_titles = ['Seq1u1', 'Seq1u10', 'Seq1uinf']
+    Seq_titles = ['Seq1u1', 'Seq1u10', 'Seq2uinf']
     interval = jnp.arange(1, n_iter + 1)
-    Seq = [jnp.ones(n_iter), jnp.ones(n_iter)]
+    Seq = [jnp.ones(n_iter), jnp.ones(n_iter), 1/interval]
     Ns = [1e4]
     target_residual_schedules = [jnp.full(n_iter, 1), 10 * jnp.full(n_iter, 10), jnp.inf]
     n_repetitions = 100
