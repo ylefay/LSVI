@@ -50,7 +50,7 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
 
 
 if __name__ == "__main__":
-    n_iter = 25
+    n_iter = 100
     Seq_titles = ['Seq1_u10', 'Seq3_u10']
     interval = jnp.arange(1, n_iter + 1)
     Seq = [jnp.ones(n_iter), jnp.ones(n_iter) * 1e-3]

@@ -1,14 +1,12 @@
-import logging
-
 import jax
 import jax.numpy as jnp
 import jax.random
 import optax
 from blackjax.vi import meanfield_vi
-from timeit_decorator import timeit
 
 from experiments.logisticRegression.mnist.load_mnist import mnist_dataset
 from experiments.logisticRegression.utils import get_tgt_log_density
+from experiments.time_wrapper import timer
 from variational.exponential_family import GenericMeanFieldNormalDistribution, NormalDistribution
 from variational.exponential_family import MeanFieldNormalDistribution
 from variational.meanfield_gaussian_lsvi import mean_field_gaussian_lsvi
@@ -20,7 +18,7 @@ OP_key = jax.random.PRNGKey(0)
 jax.config.update("jax_enable_x64", True)
 
 
-@timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
+@timer(runs=n_runs)
 def experiment_mf_lsvi(key, n_samples, n_iter, lr_schedule=None, target_residual_schedule=None):
     flipped_predictors = mnist_dataset(return_test=False)
     N, dim = flipped_predictors.shape
@@ -46,7 +44,7 @@ def experiment_mf_lsvi(key, n_samples, n_iter, lr_schedule=None, target_residual
     return None
 
 
-@timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
+@timer(runs=n_runs)
 def experiment(key, num_iter, num_samples, sgd=1e-3):
     flipped_predictors = mnist_dataset(return_test=False)
     dim = flipped_predictors.shape[1]
@@ -84,12 +82,17 @@ if __name__ == "__main__":
     """
     Running n_runs time with timeit decorator the experiment mean field lsvi for different n_samples
     """
-    Seq_titles = ['Seq3_u10']
-    n_iter = 1000
+    n_iter = 100
     Seq = jnp.ones(n_iter) * 1e-3
     target_residual_schedule = jnp.full(n_iter, 10)
-    n_samples_arr = [1000, 10000, 10000]
-    print("MF LSVI")
+    n_samples_arr = [1000, 10000, 100000]
+    print("MF LSVI (sch 3)")
+    for n_samples in n_samples_arr:
+        print(n_samples)
+        experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+
+    target_residual_schedule = jnp.inf
+    print("MF LSVI (sch 1)")
     for n_samples in n_samples_arr:
         print(n_samples)
         experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
@@ -100,4 +103,5 @@ if __name__ == "__main__":
     sgd = 1e-3
     print("MF BLACKJAX")
     for n_samples in n_samples_arr:
+        print(n_samples)
         experiment(OP_key, n_iter, n_samples, sgd)
