@@ -1,3 +1,5 @@
+import pickle
+
 import jax.numpy as jnp
 import jax.random
 import numpy as np
@@ -5,7 +7,7 @@ import pymc as pm
 
 from experiments.time_wrapper import timer
 
-n_runs = 5
+n_runs = 1
 
 OP_key = jax.random.PRNGKey(0)
 
@@ -16,8 +18,6 @@ from variational.exponential_family import GenericNormalDistribution, NormalDist
 from variational.gaussian_lsvi import gaussian_lsvi
 
 OUTPUT_PATH = "./output"
-OP_key = jax.random.PRNGKey(4)
-jax.config.update("jax_enable_x64", True)
 
 
 @timer(runs=n_runs)
@@ -76,26 +76,37 @@ if __name__ == "__main__":
     """
     Running n_runs time with timeit decorator the experiment mean field lsvi for different n_samples
     """
-    n_iter = 100
+    n_iter = 10
     Seq = jnp.ones(n_iter)
     target_residual_schedule = jnp.full(n_iter, 10)
-    n_samples_arr = [100, 1000, 10000]
+    n_samples_arr = [100, 1000, 5000, 10000, 20000]
+    time_results = np.zeros((3, len(n_samples_arr), n_runs))
+
     print("FC LSVI (sch. 3)")
-    for n_samples in n_samples_arr:
+    for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+        time_results[0, idx] = experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
 
     Seq = 1 / jnp.arange(1, n_iter + 1)
     target_residual_schedule = jnp.inf
     print("FC LSVI (sch. 1)")
-    for n_samples in n_samples_arr:
+    for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+        time_results[1, idx] = experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
 
     """
     Doing the same but using pyMC3 default ADVI implementation.
     """
     print("FC ADVI")
-    for n_samples in n_samples_arr:
+    for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        experiment(n_iter, n_samples)
+        while True:
+            try:
+                time_results[2, idx] = experiment(n_iter, n_samples)
+            except Exception:
+                print("trying again")
+                continue
+            else:
+                break
+    with open(f"walltime_full_cov.pkl", "wb") as f:
+        pickle.dump(time_results, f)
