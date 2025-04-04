@@ -3,14 +3,14 @@ import jax.numpy as jnp
 import jax.random
 import optax
 from blackjax.vi import meanfield_vi
-
+import numpy as np
 from experiments.logisticRegression.mnist.load_mnist import mnist_dataset
 from experiments.logisticRegression.utils import get_tgt_log_density
 from experiments.time_wrapper import timer
 from variational.exponential_family import GenericMeanFieldNormalDistribution, NormalDistribution
 from variational.exponential_family import MeanFieldNormalDistribution
 from variational.meanfield_gaussian_lsvi import mean_field_gaussian_lsvi
-
+import pickle
 n_runs = 5
 
 OP_key = jax.random.PRNGKey(0)
@@ -85,23 +85,29 @@ if __name__ == "__main__":
     n_iter = 100
     Seq = jnp.ones(n_iter) * 1e-3
     target_residual_schedule = jnp.full(n_iter, 10)
-    n_samples_arr = [1000, 10000, 100000]
+    n_samples_arr = [1000, 10000, 50000, 100000]
+
+    time_results = np.zeros((3, len(n_samples_arr), n_runs))
+
     print("MF LSVI (sch 3)")
-    for n_samples in n_samples_arr:
+    for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+        time_results[0, idx] = experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
 
     target_residual_schedule = jnp.inf
     print("MF LSVI (sch 1)")
-    for n_samples in n_samples_arr:
+    for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+        time_results[1, idx] = experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
 
     """
     Doing the same but using blackjax.meanfield_vi.
     """
     sgd = 1e-3
     print("MF BLACKJAX")
-    for n_samples in n_samples_arr:
+    for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        experiment(OP_key, n_iter, n_samples, sgd)
+        time_results[2, idx] = experiment(OP_key, n_iter, n_samples, sgd)
+
+    with open("walltime_results.pkl", "wb") as f:
+        pickle.dump(time_results, f)

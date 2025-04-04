@@ -6,7 +6,7 @@ def timer(runs=1):
         @wraps(func)
         def wrapper(*args, **kwargs):
             times = []
-            for _ in range(n_runs):
+            for _ in range(runs):
                 start_time = time.perf_counter()
                 func(*args, **kwargs)
                 end_time = time.perf_counter()
