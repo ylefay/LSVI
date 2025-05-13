@@ -15,10 +15,11 @@ logging.basicConfig(level=logging.INFO)
 jax.config.update("jax_enable_x64", True)
 OUTPUT_PATH = "./output_timeit"
 
-n_runs = 1
+n_runs = 10
 n_repetitions = 1
 OP_key = jax.random.PRNGKey(0)
 keys = jax.random.split(OP_key, n_repetitions)
+
 
 @timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
 def time_heuristic_gaussianMeanField_Nicolas_u10_fixed1em3():
@@ -61,13 +62,14 @@ def time_gaussianMeanField_bj():
     N_iters = 500
     sgd = 1e-3
     num_samples = int(1e4)
-    gaussianMeanField_ADVI_blackjax(n_repetitions, N_iters, num_samples, sgd, OUTPUT_PATH=OUTPUT_PATH)
+    gaussianMeanField_ADVI_blackjax(keys, N_iters, num_samples, sgd, OUTPUT_PATH=OUTPUT_PATH)
+
 
 @timeit(runs=n_runs, log_level=logging.INFO, detailed=True)
 def time_ngd_diagonal():
     n_iter = int(5e2)
     n_samples = int(1e4)
-    lr = 1 / jnp.arange(1, n_iter + 1)
+    lr = 1e-3
     ngd_diagonal(keys, n_iter, n_samples, lr, OUTPUT_PATH=OUTPUT_PATH)
 
 

@@ -27,8 +27,8 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, title_seq="
     my_variational_family = GenericNormalDistribution(dimension=dim)
 
     # Laplace Approximation for the initialisation
-    #_, laplace_mean, laplace_cov = laplace_approximation(tgt_log_density, jnp.zeros(dim))
-    #upsilon_init = my_variational_family.get_upsilon(laplace_mean, laplace_cov)
+    # _, laplace_mean, laplace_cov = laplace_approximation(tgt_log_density, jnp.zeros(dim))
+    # upsilon_init = my_variational_family.get_upsilon(laplace_mean, laplace_cov)
     upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
 
     if lr_schedule is None:

@@ -38,7 +38,7 @@ def time_heuristic_truncated_gaussian():
     n_samples = 100
     heuristic_truncated_gaussian(n_samples=int(n_samples), n_iter=n_iter, lr_schedule=Seq, title_seq=Seq_title,
                                  target_residual_schedule=target_residual_schedule,
-                                 OP_key=OP_key,  OUTPUT_PATH=OUTPUT_PATH)
+                                 OP_key=OP_key, OUTPUT_PATH=OUTPUT_PATH)
 
 
 @timeit(runs=5, log_level=logging.INFO, detailed=True)
@@ -46,7 +46,7 @@ def time_rwmh():
     OP_key = jax.random.PRNGKey(0)
     n_samples_for_tgt_log = 100
     num_mcmc_steps = 10000
-    rwmh(OP_key, num_mcmc_steps, n_samples_for_tgt_log,  OUTPUT_PATH=OUTPUT_PATH)
+    rwmh(OP_key, num_mcmc_steps, n_samples_for_tgt_log, OUTPUT_PATH=OUTPUT_PATH)
 
 
 if __name__ == "__main__":

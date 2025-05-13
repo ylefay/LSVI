@@ -11,10 +11,11 @@ from variational.meanfield_gaussian_lsvi import mean_field_gaussian_lsvi
 
 OUTPUT_PATH = "./output_mean_field"
 OP_key = jax.random.PRNGKey(4)
-jax.config.update("jax_enable_x64", True)
+jax.config.update("jax_enable_x64", False)
 
 
-def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_residual_schedule=None, title_seq="Seq", OUTPUT_PATH="./output"):
+def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_residual_schedule=None, title_seq="Seq",
+               OUTPUT_PATH="./output"):
     flipped_predictors = mnist_dataset(return_test=False)
     N, dim = flipped_predictors.shape
 
@@ -40,28 +41,30 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
         return res, res_all
 
     if not os.path.exists(
-            f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl"):
+            f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}.pkl"):
         with jax.disable_jit(False):
             res, res_all = f(keys)
         with open(
-                f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl",
+                f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}.pkl",
                 "wb") as f:
             pickle.dump({'desc': desc, 'PARAMS': PARAMS, 'res': res, 'all': res_all}, f)
 
 
 if __name__ == "__main__":
     n_iter = 100
-    Seq_titles = ['Seq1_u10', 'Seq3_u10']
+    Seq_titles = ['inf_1em3', '10_1', '10_1em3']
     interval = jnp.arange(1, n_iter + 1)
-    Seq = [jnp.ones(n_iter), jnp.ones(n_iter) * 1e-3]
-    target_residual_schedules = [jnp.full(n_iter, 10), jnp.full(n_iter, 10)]
+    Seq = [jnp.ones(n_iter) * 1e-3, jnp.ones(n_iter), jnp.ones(n_iter) * 1e-3]
+    target_residual_schedules = [jnp.inf, jnp.full(n_iter, 10), jnp.full(n_iter, 10)]
     Ns = [1e4]
-    n_repetitions = 100
+    n_repetitions = 1
     for idx, title in enumerate(Seq_titles):
+        print(title)
         for n_samples in Ns:
-            for key in range(1):
+            for key in range(101):
                 keys = jax.random.split(jax.random.PRNGKey(key), n_repetitions)
                 print(key)
                 print(n_samples)
                 experiment(keys, n_samples=int(n_samples), n_iter=n_iter, lr_schedule=Seq[idx],
-                           target_residual_schedule=target_residual_schedules[idx], title_seq=title, OUTPUT_PATH=OUTPUT_PATH)
+                           target_residual_schedule=target_residual_schedules[idx], title_seq=title + str(key),
+                           OUTPUT_PATH=OUTPUT_PATH)

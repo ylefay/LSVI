@@ -12,7 +12,7 @@ OP_key = jax.random.PRNGKey(0)
 jax.config.update("jax_enable_x64", True)
 OUTPUT = "./losses"
 EXCLUDED_PICKLES = [""]
-SIZE_vmap = 101
+SIZE_vmap = 11
 
 """
 Compute the opposite of the ELBO for the Gaussian variational family
@@ -63,27 +63,29 @@ if __name__ == "__main__":
                              tgt_log_density=tgt_log_density, n_samples_for_loss=int(1e4))
 
 
-    skip = 10
+    skip = 1
     trim = 10000
     for idx, my_pkl in enumerate(PKLs):
         if PKL_titles[idx] not in EXCLUDED_PICKLES and not os.path.exists(
                 f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss_trim{trim}_skip{skip}.pkl"):
             n_repetitions = my_pkl['means'].shape[0]
-            size_pkl = my_means.shape[1]
+            size_pkl = my_pkl['means'].shape[1]
             loss = jnp.zeros((n_repetitions, size_pkl))
-            keys = jax.random.split(OP_key, (size_pkl // SIZE_vmap + 1)*n_repetitions).reshape((n_repetitions, size_pkl // SIZE_vmap + 1, -1))
+            keys = jax.random.split(OP_key, (size_pkl // SIZE_vmap + 1) * n_repetitions).reshape(
+                (n_repetitions, size_pkl // SIZE_vmap + 1, -1))
             for repeat in range(n_repetitions):
                 my_means = jnp.array(my_pkl['means'][repeat][:trim][::skip])[:, jnp.newaxis]
                 my_covs = jnp.array(my_pkl['covs'][repeat][:trim][::skip])
                 my_meanscovs = jnp.concatenate([my_means, my_covs], axis=1)
                 for k in range(my_means.shape[0] // SIZE_vmap):
-                    keys2 = jax.random.split(keys[repeat,k], SIZE_vmap)
+                    keys2 = jax.random.split(keys[repeat, k], SIZE_vmap)
                     loss = loss.at[repeat, k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl)].set(
                         wrapper_gaussian_loss(keys2, my_meanscovs[k * SIZE_vmap:min((k + 1) * SIZE_vmap, size_pkl)]))
                 if size_pkl % SIZE_vmap != 0:
                     keys2 = jax.random.split(keys[repeat, -1], size_pkl % SIZE_vmap)
                     loss = loss.at[repeat, -(size_pkl % SIZE_vmap):].set(wrapper_gaussian_loss(keys2,
-                                                                                       my_meanscovs[
-                                                                                       -(size_pkl % SIZE_vmap):]))
+                                                                                               my_meanscovs[
+                                                                                               -(
+                                                                                                           size_pkl % SIZE_vmap):]))
             with open(f"{OUTPUT}/{PKL_titles[idx][:-4]}_loss_trim{trim}_skip{skip}.pkl", "wb") as f:
                 pickle.dump(loss, f)

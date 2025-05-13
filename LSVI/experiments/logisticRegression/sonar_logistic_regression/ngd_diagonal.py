@@ -1,5 +1,3 @@
-from variational.ngd import ngd_on_mf_gaussian_kl
-
 import pickle
 
 import jax
@@ -7,6 +5,7 @@ import jax.numpy as jnp
 
 from experiments.logisticRegression.utils import get_dataset, get_tgt_log_density
 from variational.exponential_family import GenericMeanFieldNormalDistribution, MeanFieldNormalDistribution
+from variational.ngd import ngd_on_mf_gaussian_kl
 
 OUTPUT_PATH = "./output"
 jax.config.update("jax_enable_x64", True)
@@ -33,7 +32,7 @@ def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output_mean_field"):
     @jax.vmap
     def f(key):
         res = ngd_on_mf_gaussian_kl(key, tgt_log_density, upsilon_init, n_iter, n_samples,
-                        lr_schedule=lr, sanity=sanity)
+                                    lr_schedule=lr, sanity=sanity)
         return res
 
     res = f(keys)

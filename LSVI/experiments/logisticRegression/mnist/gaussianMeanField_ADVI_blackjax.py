@@ -9,13 +9,13 @@ from experiments.logisticRegression.mnist.load_mnist import mnist_dataset
 from experiments.logisticRegression.utils import get_tgt_log_density
 from variational.exponential_family import MeanFieldNormalDistribution
 
-OUTPUT_PATH = "./output_mean_field"
+OUTPUT_PATH = "./output_answer_to_secondround"
 OP_key = jax.random.PRNGKey(0)
 
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(keys, num_iter, num_samples, sgd=1e-3, OUTPUT_PATH="./output_mean_field"):
+def experiment(keys, num_iter, num_samples, sgd=1e-3, OUTPUT_PATH="./output_mean_field", s=""):
     flipped_predictors = mnist_dataset(return_test=False)
     dim = flipped_predictors.shape[1]
 
@@ -48,19 +48,20 @@ def experiment(keys, num_iter, num_samples, sgd=1e-3, OUTPUT_PATH="./output_mean
         return mus, rhos
 
     states = inference_loop(keys)
-    with open(f"{OUTPUT_PATH}/res_mfg_advi_blackjax_{num_iter}_{num_samples}_{sgd}.pkl", "wb") as f:
+    with open(f"{OUTPUT_PATH}/res_mfg_advi_blackjax_{s}_{num_iter}_{num_samples}_{sgd}.pkl", "wb") as f:
         pickle.dump(
             {'desc': "MNIST dataset, mean field Gaussian ADVI blackjax", 'num_iter': num_iter,
              'num_samples': num_samples, 'sgd': sgd, 'states': (states[0], states[1])}, f)
 
 
 if __name__ == "__main__":
-    N_iters = [1e4]
-    N_iters = [500]
+    N_iters = [100]
     sgd = 1e-3
     num_samples = int(1e4)
-    n_repetitions = 2
-    keys = jax.random.split(OP_key, n_repetitions)
+    n_repetitions = 10
     for num_iter in N_iters:
         print(num_iter)
-        experiment(keys, int(num_iter), num_samples, sgd)
+        for key in range(10):
+            keys = jax.random.split(jax.random.PRNGKey(key), n_repetitions)
+            s = key
+            experiment(keys, int(num_iter), num_samples, sgd, s)

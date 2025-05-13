@@ -6,6 +6,7 @@ import jax.numpy as jnp
 from variational.exponential_family import GenericNormalDistribution
 from variational.utils import vec, unvec, get_residual
 
+
 # jax.config.update('jax_platform_name', 'cpu')  # Required to use sqrtm.
 
 

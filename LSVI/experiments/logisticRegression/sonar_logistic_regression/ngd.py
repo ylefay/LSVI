@@ -11,7 +11,7 @@ OUTPUT_PATH = "./output"
 jax.config.update("jax_enable_x64", True)
 
 
-def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
+def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output", s=""):
     flipped_predictors = get_dataset(dataset="Sonar")
     N, dim = flipped_predictors.shape
 
@@ -40,16 +40,17 @@ def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
     desc = "SONAR dataset, full-cov Gaussian, NGD"
     with open(
-            f"{OUTPUT_PATH}/gaussian_ngd_{n_iter}_{n_samples}_{lr if isinstance(lr, float) else "Seq"}.pkl",
+            f"{OUTPUT_PATH}/gaussian_ngd_{n_iter}_{n_samples}_{lr if isinstance(lr, float) else "Seq"}_{s}.pkl",
             "wb") as f:
         pickle.dump({'desc': desc, 'PARAMS': PARAMS, 'res': res, 'all': None}, f)
 
 
 if __name__ == "__main__":
     n_iter = 100
-    n_samples = int(1e4)
+    n_samples = int(1e5)
     lr = 1 / jnp.arange(1, n_iter + 1)
     OP_key = jax.random.PRNGKey(0)
-    n_repetitions = 10
-    keys = jax.random.split(OP_key, n_repetitions)
-    experiment(keys, n_iter, n_samples, lr, "./output")
+    n_repetitions = 20
+    for key in range(5):
+        keys = jax.random.split(jax.random.PRNGKey(key), n_repetitions)
+        experiment(keys, n_iter, n_samples, lr, "./output", key)
