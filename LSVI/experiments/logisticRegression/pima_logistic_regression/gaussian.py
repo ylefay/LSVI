@@ -31,9 +31,10 @@ def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
     @jax.vmap
     def f(key):
         res, res_all = lsvi(key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
-                        lr_schedule=lr,
-                        return_all=False)
+                            lr_schedule=lr,
+                            return_all=False)
         return res, res_all
+
     res, res_all = f(keys)
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
@@ -45,10 +46,10 @@ def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
 
 
 if __name__ == "__main__":
-    n_iter = 100
+    n_iter = 10
     n_samples = int(1e4)
     lr = 1.0
-    n_repetitions = 1
+    n_repetitions = 100
     OP_key = jax.random.PRNGKey(0)
     keys = jax.random.split(OP_key, n_repetitions)
     experiment(keys, n_iter, n_samples, lr, "./output")

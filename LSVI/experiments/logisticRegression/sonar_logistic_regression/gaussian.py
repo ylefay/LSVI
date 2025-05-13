@@ -5,7 +5,6 @@ import jax.numpy as jnp
 
 from experiments.logisticRegression.utils import get_dataset, get_tgt_log_density
 from variational.exponential_family import GenericNormalDistribution, NormalDistribution
-from variational.laplace import laplace_approximation
 from variational.lsvi import lsvi
 
 OUTPUT_PATH = "./output"

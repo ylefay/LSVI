@@ -82,7 +82,7 @@ def experiment(n_samples, n_iter, lr, N_repeat=3, OUTPUT_PATH="./output"):
 
 if __name__ == "__main__":
     OUTPUT_PATH = "./output"  # "output_qmc"
-    N_repeat = 3  # number of repetitions
+    N_repeat = 100  # number of repetitions
     # LSVI parameter
     lr = 0.5
     n_samples = 5 * 10 ** 4

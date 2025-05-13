@@ -1,15 +1,13 @@
-import os.path
 import pickle
-
 from typing import Callable
 
 import jax
 import jax.numpy as jnp
 
-from variational.utils import get_residual
-from experiments.logisticRegression.subsampling_review.utils import get_tgt_log_density
 from experiments.logisticRegression.subsampling_review.get_dataset import get_Census_Income_dataset
+from experiments.logisticRegression.subsampling_review.utils import get_tgt_log_density
 from variational.exponential_family import GenericMeanFieldNormalDistribution, NormalDistribution
+from variational.utils import get_residual
 
 OUTPUT_PATH = "./output_mean_field"
 OP_key = jax.random.PRNGKey(0)
@@ -114,7 +112,7 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
     upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim))
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr_schedule, 'residual': target_residual_schedule}
-    desc = "PIMA dataset, heuristic, mf. Gaussian, Nicolas"
+    desc = "Census dataset, heuristic, mf. Gaussian, Nicolas"
 
     # if not os.path.exists(
     #        f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl"):
@@ -136,11 +134,11 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
 
 if __name__ == "__main__":
     n_iter = 1000
-    Seq_titles = ['Seq1u1', 'Seq1u10', 'Seq2uinf']
+    Seq_titles = ['10_1em3', 'inf_1em3']
     interval = jnp.arange(1, n_iter + 1)
-    Seq = [jnp.ones(n_iter), jnp.ones(n_iter), 1/interval]
+    Seq = [jnp.ones(n_iter) * 1e-3, jnp.ones(n_iter) * 1e-3]
     Ns = [1e4]
-    target_residual_schedules = [jnp.full(n_iter, 1), 10 * jnp.full(n_iter, 10), jnp.inf]
+    target_residual_schedules = [jnp.full(n_iter, 1) * 10, jnp.inf]
     n_repetitions = 100
     keys = jax.random.split(OP_key, n_repetitions)
     for idx, title in enumerate(Seq_titles):

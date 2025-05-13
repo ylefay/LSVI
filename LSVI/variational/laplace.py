@@ -1,8 +1,10 @@
+from typing import Callable
+
 import jax
 import jax.numpy as jnp
 import scipy
-from typing import Callable
 from jax.typing import ArrayLike
+
 
 def newton_descent(loss: Callable, init: ArrayLike):
     """

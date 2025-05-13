@@ -1,6 +1,7 @@
 import time
 from functools import wraps
 
+
 def timer(runs=1):
     def decorator(func):
         @wraps(func)
@@ -12,5 +13,7 @@ def timer(runs=1):
                 end_time = time.perf_counter()
                 times.append(end_time - start_time)
             return times
+
         return wrapper
+
     return decorator

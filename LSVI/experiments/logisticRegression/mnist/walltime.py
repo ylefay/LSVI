@@ -1,16 +1,20 @@
+import pickle
+
 import jax
 import jax.numpy as jnp
 import jax.random
+import numpy as np
 import optax
 from blackjax.vi import meanfield_vi
-import numpy as np
+
 from experiments.logisticRegression.mnist.load_mnist import mnist_dataset
 from experiments.logisticRegression.utils import get_tgt_log_density
 from experiments.time_wrapper import timer
 from variational.exponential_family import GenericMeanFieldNormalDistribution, NormalDistribution
 from variational.exponential_family import MeanFieldNormalDistribution
 from variational.meanfield_gaussian_lsvi import mean_field_gaussian_lsvi
-import pickle
+from variational.ngd import ngd
+
 n_runs = 5
 
 OP_key = jax.random.PRNGKey(0)
@@ -78,6 +82,35 @@ def experiment(key, num_iter, num_samples, sgd=1e-3):
     return None
 
 
+@timer(runs=n_runs)
+def experiment_ngd(key, n_iter, n_samples, lr):
+    flipped_predictors = mnist_dataset(return_test=False)
+    N, dim = flipped_predictors.shape
+
+    # Gaussian Prior
+    my_prior_covariance = 25 * jnp.identity(dim)
+    # my_prior_covariance = my_prior_covariance.at[0, 0].set(400)
+    my_prior_covariance = jnp.diag(my_prior_covariance)
+    my_prior_log_density = MeanFieldNormalDistribution(jnp.zeros(dim), my_prior_covariance).log_density
+    tgt_log_density = get_tgt_log_density(flipped_predictors, my_prior_log_density)
+
+    # Mean Field Gaussian Variational Family
+    my_variational_family = GenericMeanFieldNormalDistribution(dimension=dim)
+    sampling = my_variational_family.sampling_method
+    sufficient_statistic = my_variational_family.sufficient_statistic
+    sanity = my_variational_family.sanity
+
+    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
+
+    def f(key):
+        res = ngd(key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+                  lr_schedule=lr, sanity=sanity)
+        return res
+
+    res = f(key)
+    return None
+
+
 if __name__ == "__main__":
     """
     Running n_runs time with timeit decorator the experiment mean field lsvi for different n_samples
@@ -87,15 +120,15 @@ if __name__ == "__main__":
     target_residual_schedule = jnp.full(n_iter, 10)
     n_samples_arr = [1000, 10000, 50000, 100000]
 
-    time_results = np.zeros((3, len(n_samples_arr), n_runs))
+    time_results = np.zeros((5, len(n_samples_arr), n_runs))
 
-    print("MF LSVI (sch 3)")
+    print("MF LSVI (sch 6, 10 1e-3)")
     for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
         time_results[0, idx] = experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
 
     target_residual_schedule = jnp.inf
-    print("MF LSVI (sch 1)")
+    print("MF LSVI (sch 5, inf 1e-3)")
     for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
         time_results[1, idx] = experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
@@ -108,6 +141,25 @@ if __name__ == "__main__":
     for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
         time_results[2, idx] = experiment(OP_key, n_iter, n_samples, sgd)
+    Seq = 1 / jnp.arange(1, n_iter + 1) * 1e-3
+    n_samples_arr = [10000]
+    """
+    Forgot sch. 4 (1, 1)
+    """
+    print("MF LSVI (sch 4)")
+    Seq = jnp.ones(n_iter)
+    target_residual_schedule = jnp.full(n_iter, 1)
+    for idx, n_samples in enumerate(n_samples_arr):
+        print(n_samples)
+        time_results[3, idx] = experiment_mf_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+
+    """
+    NGD
+    sch. 5 (u=inf, eps=1e-3)
+    """
+    for idx, n_samples in enumerate(n_samples_arr):
+        print(n_samples)
+        time_results[4, idx] = experiment_ngd(OP_key, n_iter, n_samples, Seq)
 
     with open("walltime_results.pkl", "wb") as f:
         pickle.dump(time_results, f)

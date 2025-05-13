@@ -68,7 +68,8 @@ if __name__ == "__main__":
             n_repetitions = my_pkl['means'].shape[0]
             size_pkl = my_pkl['means'].shape[1]
             loss = jnp.zeros((n_repetitions, size_pkl))
-            keys = jax.random.split(OP_key, (size_pkl // SIZE_vmap + 1)*n_repetitions).reshape((n_repetitions, size_pkl // SIZE_vmap + 1, -1))
+            keys = jax.random.split(OP_key, (size_pkl // SIZE_vmap + 1) * n_repetitions).reshape(
+                (n_repetitions, size_pkl // SIZE_vmap + 1, -1))
             for repeat in range(n_repetitions):
                 my_means = jnp.array(my_pkl['means'][repeat])[:, jnp.newaxis]
                 my_covs = jnp.array(my_pkl['covs'][repeat])

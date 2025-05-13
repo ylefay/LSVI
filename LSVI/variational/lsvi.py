@@ -6,7 +6,8 @@ import jax.numpy as jnp
 from variational.utils import OLS, get_residual
 
 
-def lsvi(OP_key: jax.Array, sampling: Callable, sufficient_statistic: Callable, tgt_log_density: Callable, upsilon_init: jnp.ndarray, n_iter: int, n_samples: int,
+def lsvi(OP_key: jax.Array, sampling: Callable, sufficient_statistic: Callable, tgt_log_density: Callable,
+         upsilon_init: jnp.ndarray, n_iter: int, n_samples: int,
          regression=OLS, lr_schedule=1.0, return_all=False, sanity=lambda _: False, target_residual_schedule=jnp.inf):
     """
     Fixed-point scheme for Variational Inference problem on exponential families, given some regression estimators.
@@ -73,7 +74,8 @@ def lsvi(OP_key: jax.Array, sampling: Callable, sufficient_statistic: Callable, 
         target_residual_schedule = jnp.full(n_iter, target_residual_schedule)
 
     if return_all:
-        _, all_results = jax.lax.scan(fun_iter_return_all, upsilon_init, (iter_keys, lr_schedule, target_residual_schedule))
+        _, all_results = jax.lax.scan(fun_iter_return_all, upsilon_init,
+                                      (iter_keys, lr_schedule, target_residual_schedule))
         upsilons = all_results[0]
         upsilons = jnp.insert(upsilons, 0, upsilon_init, axis=0)
         return upsilons, all_results[1:]

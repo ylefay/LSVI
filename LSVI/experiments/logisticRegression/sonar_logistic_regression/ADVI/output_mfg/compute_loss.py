@@ -71,7 +71,7 @@ if __name__ == "__main__":
     for idx, my_pkl in enumerate(PKLs):
         if PKL_titles[idx] not in EXCLUDED_PICKLES:
             n_repetitions = my_pkl['means'].shape[0]
-            #size_pkl = my_pkl['means'].shape[1]
+            # size_pkl = my_pkl['means'].shape[1]
             size_pkl = my_pkl['means'][0][::skip].shape[0]
             loss = jnp.zeros((n_repetitions, size_pkl))
             keys = jax.random.split(OP_key, (size_pkl // SIZE_vmap + 1) * n_repetitions).reshape(

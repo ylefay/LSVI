@@ -34,7 +34,9 @@ def experiment(n_repeat, n_iter, n_samples=None):
             start_sigma = {'beta': np.ones(dim)}
             approx = pm.fit(n=n_iter, callbacks=[callback], obj_n_mc=n_samples, start=start_means,
                             start_sigma=start_sigma)  # obj_n_mc=n_samples
-            return approx.mean.eval(), approx.cov.eval(), approx.hist, approx.means, np.diagonal(approx.covs, axis1=1, axis2=2)
+            return approx.mean.eval(), approx.cov.eval(), approx.hist, approx.means, np.diagonal(approx.covs, axis1=1,
+                                                                                                 axis2=2)
+
     for _ in range(n_repeat):
         mean, cov, hist, means, covs = _experiment()
         list_mean[_] = mean

@@ -109,6 +109,7 @@ def get_tgt_density(sdata: jnp.ndarray, n_samples: int, shrinkage=0.1, transform
             """
             Implementing the log. of the jacobian of the previous inverse mapping
             """
+
             def log_d(x):
                 """
                 D[1 / (1 + exp(-x))] = exp(-x) / (1 + exp(-x))^2

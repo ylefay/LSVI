@@ -34,10 +34,11 @@ def experiment(n_repeat, n_iter, n_samples=None, OUTPUT_PATH="./output"):
             start_means = {'beta': pm.find_MAP()['beta']}
             start_means = {'beta': np.zeros(dim)}
             start_sigma = {'beta': np.identity(dim)}
-            approx = pm.fit(n=n_iter, callbacks=[callback], obj_n_mc=n_samples, method='fullrank_advi', start=start_means)
+            approx = pm.fit(n=n_iter, callbacks=[callback], obj_n_mc=n_samples, method='fullrank_advi',
+                            start=start_means)
             return approx.mean.eval(), approx.cov.eval(), approx.hist, approx.means, approx.covs
 
-    #Looping over the desired number of repetitions, sequentially, and storing the results.
+    # Looping over the desired number of repetitions, sequentially, and storing the results.
     for _ in range(n_repeat):
         mean, cov, hist, means, covs = _experiment()
         list_mean[_] = mean
@@ -53,9 +54,9 @@ def experiment(n_repeat, n_iter, n_samples=None, OUTPUT_PATH="./output"):
 
 
 if __name__ == "__main__":
-    N_iters = [1e5]
+    N_iters = [1e2]
     n_samples = None
-    n_repetitions = 1
+    n_repetitions = 100
     for n_iter in N_iters:
         print(n_iter)
         experiment(n_repetitions, int(n_iter), n_samples)
