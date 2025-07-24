@@ -112,17 +112,17 @@ if __name__ == "__main__":
     n_samples_arr = [1e2, 1e3, 5e3, 1e4]
     time_results = np.zeros((4, len(n_samples_arr), n_runs))
 
-    print("FC LSVI (sch. 3)")
+    print("FC LSVI (sch. 2)")
     for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        time_results[0, idx] = experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+        time_results[0, idx] = experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq[1], target_residual_schedules[1])
 
     Seq = 1 / jnp.arange(1, n_iter + 1)
     target_residual_schedule = jnp.inf
     print("FC LSVI (sch. 1)")
     for idx, n_samples in enumerate(n_samples_arr):
         print(n_samples)
-        time_results[1, idx] = experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq, target_residual_schedule)
+        time_results[1, idx] = experiment_fc_lsvi(OP_key, n_samples, n_iter, Seq[0], target_residual_schedule[0])
 
     """
     Doing the same but using pyMC3 default ADVI implementation.
