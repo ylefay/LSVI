@@ -29,6 +29,10 @@ test = [
     "pytest", # testing
     "scikit-learn", # benchmarking logistic regression on the MNIST dataset
     "scipy", # required for QMC
-    "levy-stable-jax"  # required for the levy-stable implementation of LSVI, required by the Fowler's Toad displacement model
+    "levy-stable-jax",  # required for the levy-stable implementation of LSVI, required by the Fowler's Toad displacement model
+    "gmmvi", #required for gmmvi experiment on pima
+    "ucimlrepo", # required to download Census dataset
+    "polars", # required for the census dataset
 ]
+
 
