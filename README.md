@@ -28,4 +28,4 @@ regression on a real dataset, the variable selection problem in a linear regress
 product of Bernoullis, and a stochastic movement model with intractable likelihood.
 
 # References
-Yvann Le Fay, Nicolas Chopin, Simon Barthelmé. Least squares variational inference. 2025. [⟨hal-04963327⟩](https://hal.science/hal-04963327)
+Yvann Le Fay, Nicolas Chopin, Simon Barthelmé. Least squares variational inference. NeurIPS 2025. [arxiv:2502.18475](https://arxiv.org/abs/2502.18475)
