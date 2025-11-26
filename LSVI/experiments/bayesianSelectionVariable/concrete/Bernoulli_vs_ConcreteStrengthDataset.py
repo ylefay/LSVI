@@ -61,7 +61,7 @@ def experiment(n_samples, n_iter, lr, N_repeat=3, OUTPUT_PATH="./output"):
 
     print(f"init: {init_ps}")
     my_generic_distribution = GenericBernoulliDistribution(dimension=dim)
-    upsilon_init = my_generic_distribution.get_upsilon(init_ps)
+    eta_init = my_generic_distribution.get_eta(init_ps)
     sufficient_statistic = my_generic_distribution.sufficient_statistic_numpy
     sampling = lambda theta, n: my_generic_distribution.sampling_method_numpy(theta, n, eps=1e-3)
     for _ in range(N_repeat):
@@ -72,7 +72,7 @@ def experiment(n_samples, n_iter, lr, N_repeat=3, OUTPUT_PATH="./output"):
         else:
             res, res_all = lsvi(sampling, sufficient_statistic,
                                 tgt_log_density,
-                                upsilon_init, n_iter, n_samples, lr_schedule=lr_schedule, return_all=False)
+                                eta_init, n_iter, n_samples, lr_schedule=lr_schedule, return_all=False)
             PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr}
 
             with open(f"{OUTPUT_PATH}/{title(_)}",

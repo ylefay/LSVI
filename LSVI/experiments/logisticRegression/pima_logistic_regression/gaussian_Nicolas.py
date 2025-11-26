@@ -29,12 +29,12 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, title_seq="
 
     # Laplace Approximation for the initialisation
     _, laplace_mean, laplace_cov = laplace_approximation(tgt_log_density, jnp.zeros(dim))
-    upsilon_init = my_variational_family.get_upsilon(laplace_mean, laplace_cov)
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
+    eta_init = my_variational_family.get_eta(laplace_mean, laplace_cov)
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.identity(dim))
 
     @jax.vmap
     def f(key):
-        res, res_all = gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples, lr_schedule=lr_schedule,
+        res, res_all = gaussian_lsvi(key, tgt_log_density, eta_init, n_iter, n_samples, lr_schedule=lr_schedule,
                                      return_all=False)
         return res, res_all
 

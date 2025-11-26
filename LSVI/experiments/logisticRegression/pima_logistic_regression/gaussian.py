@@ -26,11 +26,11 @@ def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
     sampling = my_variational_family.sampling_method
     sufficient_statistic = my_variational_family.sufficient_statistic
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.identity(dim))
 
     @jax.vmap
     def f(key):
-        res, res_all = lsvi(key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res, res_all = lsvi(key, sampling, sufficient_statistic, tgt_log_density, eta_init, n_iter, n_samples,
                             lr_schedule=lr,
                             return_all=False)
         return res, res_all

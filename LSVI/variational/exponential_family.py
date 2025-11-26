@@ -13,13 +13,26 @@ from variational.utils import vec, unvec
 
 class ExponentialDistribution(ABC):
     r"""
-    Exponential family distribution in canonical form.
-    sufficient_statistic: callable,
-    must contain two constants terms, one for the log base measure, one for the log partition
-        T : x\in \R^d \mapsto \R^k,
-    sampling_method: callable, jax-compatible sampling method
-    sanity: callable, check if the natural parameter defines a valid distribution
-            by default, use a call to sampling_method
+    Abstract base class for an exponential-family distribution written in
+        canonical form (using natural parameter).
+
+    This class defines the minimal interface for probabilistic models of the form:
+        p(x) \propto \exp(\eta^\top s(x)),
+    where:
+        - s(x) is the sufficient statistic.
+
+    Subclasses must define:
+        - `sufficient_statistic`
+        - `sampling_method`
+    where:
+        sufficient_statistic should include by default an intercept term,
+    and
+        sampling_method should be a jax-compatible sampling method
+    Optionally, the method `sanity` can be defined, as a way
+    to check that the parameter indeed defines a proper density.
+    By default, `sanity` uses a call to `sampling_method`, i.e.,
+    if `smapling_method` works, then naturally the input parameter
+    defines a density.
     """
 
     def __init__(self, dimension: int):
@@ -28,21 +41,55 @@ class ExponentialDistribution(ABC):
     @staticmethod
     @abstractmethod
     def sufficient_statistic(x: jnp.ndarray):
+        r"""
+        Compute the sufficient statistic vector s(x).
+
+        Parameters
+        ----------
+        x : jnp.ndarray
+            The shape depends on the distribution.
+
+        Returns
+        -------
+        jnp.ndarray
+            The sufficient statistic vector. Must include an intercept / bias
+            term by convention (e.g., a trailing `1`).
+        """
         pass
 
     @abstractmethod
-    def sampling_method(self, upsilon_or_theta: jnp.ndarray, key: jax.Array):
+    def sampling_method(self, eta_or_theta: jnp.ndarray, key: jax.Array):
         pass
 
-    def log_density(self, upsilon: jnp.ndarray, x: jnp.ndarray):
-        return upsilon.T @ self.sufficient_statistic(x)  # - self.log_partition(theta)
+    def log_density(self, eta: jnp.ndarray, x: jnp.ndarray):
+        return eta.T @ self.sufficient_statistic(x)
 
-    def sanity(self, upsilon: jnp.ndarray):
+    def sanity(self, eta: jnp.ndarray):
         r"""
-        Check if upsilon is a valid parameter for the distribution.
+        Basic sanity check for natural parameters.
+
+        The default implementation attempts to draw a sample from the
+        distribution using the provided natural parameter and checks whether
+        the result contains NaNs. If sampling fails (e.g., due to invalid
+        parameters), the method returns `True`.
+
+        Parameters
+        ----------
+        eta : jnp.ndarray
+            Extended natural parameter vector.
+
+        Returns
+        -------
+        bool
+            True if the parameter appears invalid, False otherwise.
+
+        Notes
+        -----
+        Subclasses should override this method when a more principled or
+        efficient validity check exists (e.g., positive definiteness for Gaussians).
         """
         key = jax.random.PRNGKey(0)
-        return jnp.isnan(self.sampling_method(upsilon.at[:-1].get(), key)).any()
+        return jnp.isnan(self.sampling_method(eta.at[:-1].get(), key)).any()
 
 
 class GenericNormalDistribution(ExponentialDistribution):
@@ -52,9 +99,25 @@ class GenericNormalDistribution(ExponentialDistribution):
     @staticmethod
     def sufficient_statistic(x: jnp.ndarray):
         r"""
-        Defining the extended sufficient statistics for the normal distribution, s(x) = (x, xx^T, 1, log h(x)),
-        where h is the base distribution when assuming the canonical form for the unnormalized distribution
-            p_\theta(x) \propto h(x) \exp(\theta^T s(x)).
+        Compute the extended sufficient statistic:
+
+            s(x) = ( x,
+                     vec(xxᵀ),
+                     1 )
+
+        Parameters
+        ----------
+        x : jnp.ndarray
+            A sample vector of shape (dimension,).
+
+        Returns
+        -------
+        jnp.ndarray
+            A concatenated vector containing:
+            - the raw vector x,
+            - the vectorized outer product xxᵀ,
+            - a constant bias term 1.
+
         """
         return jnp.concatenate([x, vec(x[:, jnp.newaxis] @ x[:, jnp.newaxis].T), jnp.array([1.])])
 
@@ -78,13 +141,17 @@ class GenericNormalDistribution(ExponentialDistribution):
         return theta
 
     @staticmethod
-    def get_upsilon(mean: jnp.ndarray, cov: jnp.ndarray):
+    def get_eta(mean: jnp.ndarray, cov: jnp.ndarray):
         theta = GenericNormalDistribution.get_theta(mean, cov)
-        upsilon = jnp.concatenate([theta, jnp.array([1.])])
-        return upsilon
+        eta = jnp.concatenate([theta, jnp.array([1.])])
+        return eta
 
-    def sanity(self, upsilon):
-        _, cov = self.get_mean_cov(upsilon.at[:-1].get())
+    def sanity(self, eta):
+        """
+        The parameter defines a proper Gaussian distribution if the supposed
+        covariance matrix can be factorised via Cholesky.
+        """
+        _, cov = self.get_mean_cov(eta.at[:-1].get())
         return jnp.isnan(jnp.linalg.cholesky(cov)).any()
 
 
@@ -114,13 +181,13 @@ class GenericMeanFieldNormalDistribution(ExponentialDistribution):
         return theta
 
     @staticmethod
-    def get_upsilon(mean: jnp.ndarray, vec_diag_cov: jnp.ndarray):
+    def get_eta(mean: jnp.ndarray, vec_diag_cov: jnp.ndarray):
         theta = GenericMeanFieldNormalDistribution.get_theta(mean, vec_diag_cov)
-        upsilon = jnp.concatenate([theta, jnp.array([1.])])
-        return upsilon
+        eta = jnp.concatenate([theta, jnp.array([1.])])
+        return eta
 
-    def sanity(self, upsilon):
-        mean, cov = self.get_mean_cov(upsilon.at[:-1].get())
+    def sanity(self, eta):
+        mean, cov = self.get_mean_cov(eta.at[:-1].get())
         res = jnp.any(cov <= 0)
         return res
 
@@ -156,10 +223,10 @@ class GenericTruncatedMFNormalDistribution(ExponentialDistribution):
         return theta
 
     @staticmethod
-    def get_upsilon(mean: jnp.ndarray, vec_diag_cov: jnp.ndarray):
+    def get_eta(mean: jnp.ndarray, vec_diag_cov: jnp.ndarray):
         theta = GenericTruncatedMFNormalDistribution.get_theta(mean, vec_diag_cov)
-        upsilon = jnp.concatenate([theta, jnp.array([1.])])
-        return upsilon
+        eta = jnp.concatenate([theta, jnp.array([1.])])
+        return eta
 
 
 class GenericWishartDistribution(ExponentialDistribution):
@@ -194,10 +261,10 @@ class GenericWishartDistribution(ExponentialDistribution):
         theta = jnp.concatenate([-0.5 * vec(inv_scale), jnp.array([(degree - self.dimension - 1) / 2.])])
         return theta
 
-    def get_upsilon(self, degree: int, scale):
+    def get_eta(self, degree: int, scale):
         theta = self.get_theta(degree, scale)
-        upsilon = jnp.concatenate([theta, jnp.array([1.])])
-        return upsilon
+        eta = jnp.concatenate([theta, jnp.array([1.])])
+        return eta
 
 
 class GenericBernoulliDistributionNumpy(ExponentialDistribution):
@@ -242,10 +309,10 @@ class GenericBernoulliDistributionNumpy(ExponentialDistribution):
     def get_theta(p: float):
         return scipy.special.logit(p)
 
-    def get_upsilon(self, p: float):
+    def get_eta(self, p: float):
         theta = self.get_theta(p)
-        upsilon = np.concatenate([theta, np.array([1.])])
-        return upsilon
+        eta = np.concatenate([theta, np.array([1.])])
+        return eta
 
     sufficient_statistic = sufficient_statistic_numpy
     sampling_method = sampling_method_numpy
@@ -260,7 +327,7 @@ class ExponentialDistributionFixedTheta:
         self.theta = theta
         if dimension:
             self.dimension = dimension
-        self.upsilon = jnp.concatenate([theta, jnp.array([1.])])
+        self.eta = jnp.concatenate([theta, jnp.array([1.])])
 
     @staticmethod
     @abstractmethod
@@ -272,7 +339,7 @@ class ExponentialDistributionFixedTheta:
         pass
 
     def log_density(self, x: jnp.ndarray):
-        return self.upsilon.T @ self.sufficient_statistic(x)
+        return self.eta.T @ self.sufficient_statistic(x)
 
 
 class NormalDistribution(ExponentialDistributionFixedTheta):

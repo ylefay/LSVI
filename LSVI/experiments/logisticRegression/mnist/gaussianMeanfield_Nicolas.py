@@ -31,8 +31,8 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, title_seq="
     # Laplace Approximation for the initialisation
     # _, laplace_mean, laplace_cov = laplace_approximation(tgt_log_density, jnp.zeros(dim))
     # laplace_cov = 1 / jnp.diag(jnp.linalg.inv(laplace_cov))
-    # upsilon_init = my_variational_family.get_upsilon(laplace_mean, laplace_cov)
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
+    # eta_init = my_variational_family.get_eta(laplace_mean, laplace_cov)
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
 
     if lr_schedule is None:
         lr_schedule = 1 / jnp.arange(1, n_iter + 1)
@@ -42,7 +42,7 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, title_seq="
 
     @jax.vmap
     def f(key):
-        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, eta_init, n_iter, n_samples,
                                                 lr_schedule=lr_schedule)
         return res, res_all
 

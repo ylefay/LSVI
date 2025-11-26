@@ -37,7 +37,7 @@ def experiment(key, n_samples=100000, n_iter=100, lr_schedule=None, target_resid
     # Mean Field Gaussian Variational Family
     my_variational_family = GenericMeanFieldNormalDistribution(dimension=dim)
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.ones(dim))
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr_schedule, 'residual': target_residual_schedule}
     desc = "Census dataset, heuristic, mf. Gaussian, Nicolas"
@@ -46,7 +46,7 @@ def experiment(key, n_samples=100000, n_iter=100, lr_schedule=None, target_resid
     #        f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl"):
 
     def f(key):
-        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, eta_init, n_iter, n_samples,
                                                 lr_schedule=lr_schedule,
                                                 target_residual_schedule=target_residual_schedule,
                                                 return_all=False)
@@ -72,10 +72,10 @@ def experiment_ngd(key, n_iter, n_samples, lr_schedule):
     # Mean Field Gaussian Variational Family
     my_variational_family = GenericMeanFieldNormalDistribution(dimension=dim)
     sanity = my_variational_family.sanity
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.ones(dim))
 
     def f(key):
-        res = ngd_on_mf_gaussian_kl(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res = ngd_on_mf_gaussian_kl(key, tgt_log_density, eta_init, n_iter, n_samples,
                                     lr_schedule=lr_schedule, sanity=sanity)
         return res
 

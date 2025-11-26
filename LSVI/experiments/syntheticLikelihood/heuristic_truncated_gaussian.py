@@ -9,7 +9,7 @@ from variational.exponential_family import GenericTruncatedMFNormalDistribution
 from variational.utils import OLS, get_residual
 
 
-def lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+def lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, eta_init, n_iter, n_samples,
          regression=OLS, lr_schedule=1.0, return_all=False, sanity=lambda _: False, target_residual_schedule=jnp.inf):
     """
     Fixed-point scheme for Variational Inference problem on exponential families, given some regression estimators.
@@ -17,7 +17,7 @@ def lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, 
     :param sampling: sampling method from the variational family
     :param sufficient_statistic: sufficient statistic of the variational family
     :param tgt_log_density: log-density of the target distribution
-    :param upsilon_init: initial parameter characterizing the initial variational distribution
+    :param eta_init: initial parameter characterizing the initial variational distribution
     :param n_iter: number of iterations of the fixed-point scheme
     :param n_samples: number of samples to draw at each iteration, used to replace the exact expectations by empirical
         expectations
@@ -32,41 +32,41 @@ def lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, 
     vmapped_sufficient_statistic = jax.vmap(sufficient_statistic)
     iter_keys = jax.random.split(OP_key, n_iter)
 
-    def momentum_backtracking(lr, upsilon, next_upsilon, y, X, target_residual):
+    def momentum_backtracking(lr, eta, next_eta, y, X, target_residual):
         """
         Momentum backtracking to ensure that the natural parameter defines a valid distribution
         This function divides by two the learning rate until the natural parameter defines a valid distribution
         Then compare the obtained residual variance with the target residual variance and compute lr_tempering such that
         the new residuals have variance than the target. Take the minimum between the two learning_rate.
         """
-        lr = jax.lax.while_loop(lambda _lr: sanity(next_upsilon * _lr + (1 - _lr) * upsilon),
+        lr = jax.lax.while_loop(lambda _lr: sanity(next_eta * _lr + (1 - _lr) * eta),
                                 lambda _lr: _lr / 2, lr)
-        current_residual = get_residual(y, X, next_upsilon * lr + (1 - lr) * upsilon)
+        current_residual = get_residual(y, X, next_eta * lr + (1 - lr) * eta)
         lr_tempering = jax.lax.cond(current_residual <= target_residual, lambda _: lr,
                                     lambda _: jnp.sqrt(target_residual / current_residual), None)
         lr = jax.lax.min(lr, lr_tempering)
-        new_residual = get_residual(y, X, next_upsilon * lr + (1 - lr) * upsilon)
+        new_residual = get_residual(y, X, next_eta * lr + (1 - lr) * eta)
         return lr, new_residual
 
-    def routine_iter(upsilon, inps):
+    def routine_iter(eta, inps):
         key, lr, target_residual = inps
         keys = jax.random.split(key, n_samples)
-        theta = upsilon.at[:-1].get()
+        theta = eta.at[:-1].get()
         samples = vmapped_sampling(theta, keys)
         X = vmapped_sufficient_statistic(samples)
         y = tgt_log_density(key, samples)
-        next_upsilon = regression(X, y)
-        lr, residual = momentum_backtracking(lr, upsilon, next_upsilon, y, X, target_residual)
-        next_upsilon = next_upsilon * lr + (1 - lr) * upsilon
-        return next_upsilon, residual
+        next_eta = regression(X, y)
+        lr, residual = momentum_backtracking(lr, eta, next_eta, y, X, target_residual)
+        next_eta = next_eta * lr + (1 - lr) * eta
+        return next_eta, residual
 
-    def iter(upsilon, inps):
-        next_upsilon, _ = routine_iter(upsilon, inps)
-        return next_upsilon, next_upsilon
+    def iter(eta, inps):
+        next_eta, _ = routine_iter(eta, inps)
+        return next_eta, next_eta
 
-    def iter_return_all(upsilon, inps):
-        next_upsilon, residual = routine_iter(upsilon, inps)
-        return next_upsilon, (next_upsilon, residual)
+    def iter_return_all(eta, inps):
+        next_eta, residual = routine_iter(eta, inps)
+        return next_eta, (next_eta, residual)
 
     if isinstance(lr_schedule, float):
         lr_schedule = jnp.full(n_iter, lr_schedule)
@@ -75,14 +75,14 @@ def lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, 
         target_residual_schedule = jnp.full(n_iter, target_residual_schedule)
 
     if return_all:
-        _, all_results = jax.lax.scan(iter_return_all, upsilon_init, (iter_keys, lr_schedule, target_residual_schedule))
-        upsilons = all_results[0]
-        upsilons = jnp.insert(upsilons, 0, upsilon_init, axis=0)
-        return upsilons, all_results[1:]
+        _, all_results = jax.lax.scan(iter_return_all, eta_init, (iter_keys, lr_schedule, target_residual_schedule))
+        etas = all_results[0]
+        etas = jnp.insert(etas, 0, eta_init, axis=0)
+        return etas, all_results[1:]
     else:
-        _, upsilons = jax.lax.scan(iter, upsilon_init, (iter_keys, lr_schedule, target_residual_schedule))
-        upsilons = jnp.insert(upsilons, 0, upsilon_init, axis=0)
-        return upsilons, None
+        _, etas = jax.lax.scan(iter, eta_init, (iter_keys, lr_schedule, target_residual_schedule))
+        etas = jnp.insert(etas, 0, eta_init, axis=0)
+        return etas, None
 
 
 def experiment(n_samples=100000, n_iter=100, lr_schedule=None, target_residual_schedule=None, title_seq="Seq",
@@ -94,7 +94,7 @@ def experiment(n_samples=100000, n_iter=100, lr_schedule=None, target_residual_s
     lower, upper = jnp.array([1., 0., 0.]), jnp.array([2., 100., 0.9])
     my_variational_family = GenericTruncatedMFNormalDistribution(dimension=dim, lower=lower, upper=upper)
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.array([1.5, 50, 0.5]),
+    eta_init = my_variational_family.get_eta(jnp.array([1.5, 50, 0.5]),
                                                      jnp.array([0.05, 10, 0.01]))
 
     sampling = my_variational_family.sampling_method
@@ -108,7 +108,7 @@ def experiment(n_samples=100000, n_iter=100, lr_schedule=None, target_residual_s
     desc = "Synthetic Likelihood experiment, Fowler's toad, trunc. mfg, Heuristic"
     if not os.path.exists(
             f"{OUTPUT_PATH}/heuristic_trunc_gaussian_{n_iter}_{n_samples}_{title_seq}_{OP_key}.pkl"):
-        res, res_all = lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res, res_all = lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, eta_init, n_iter, n_samples,
                             lr_schedule=lr_schedule, sanity=sanity,
                             target_residual_schedule=target_residual_schedule,
                             return_all=False)

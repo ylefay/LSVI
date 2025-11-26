@@ -34,10 +34,10 @@ def experiment_fc_lsvi(key, n_samples=100000, n_iter=100, lr_schedule=None, targ
     # Gaussian Variational Family
     my_variational_family = GenericNormalDistribution(dimension=dim)
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.identity(dim))
 
     def f(key):
-        res, res_all = gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples, lr_schedule=lr_schedule,
+        res, res_all = gaussian_lsvi(key, tgt_log_density, eta_init, n_iter, n_samples, lr_schedule=lr_schedule,
                                      target_residual_schedule=target_residual_schedule,
                                      return_all=False)
         return res, res_all
@@ -89,10 +89,10 @@ def exp_ngd(key, n_iter, n_samples, lr):
     sufficient_statistic = my_variational_family.sufficient_statistic
     sanity = my_variational_family.sanity
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.identity(dim))
 
     def f(key):
-        res = ngd_on_gaussian_kl(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res = ngd_on_gaussian_kl(key, tgt_log_density, eta_init, n_iter, n_samples,
                                  lr_schedule=lr, sanity=sanity)
         return res
 

@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     @jax.vmap
     def wrapper_gaussian_loss(key, meancov):
-        # Wrapper for the loss -ELBO(q_\upsilon \mid \pi) where q_\upsilon is a full-rank Gaussian distribution
+        # Wrapper for the loss -ELBO(q_\eta \mid \pi) where q_\eta is a full-rank Gaussian distribution
         return gaussian_loss(OP_key=key, meancov=meancov, gaussian=full_gaussian,
                              tgt_log_density=tgt_log_density, n_samples_for_loss=int(1e4))
 
