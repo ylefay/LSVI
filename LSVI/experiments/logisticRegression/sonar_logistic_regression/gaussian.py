@@ -26,13 +26,13 @@ if __name__ == "__main__":
     sampling = my_variational_family.sampling_method
     sufficient_statistic = my_variational_family.sufficient_statistic
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.identity(dim))
 
     n_iter = 5
     n_samples = int(1e4)
     lr = None
     lr_schedule = jnp.full(n_iter, 1.0)
-    res, res_all = lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+    res, res_all = lsvi(OP_key, sampling, sufficient_statistic, tgt_log_density, eta_init, n_iter, n_samples,
                         lr_schedule=lr_schedule,
                         return_all=False)
     for idx, k in enumerate(res):

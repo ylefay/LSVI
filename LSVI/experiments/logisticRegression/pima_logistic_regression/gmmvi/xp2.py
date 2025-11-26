@@ -111,8 +111,8 @@ def xp():
 
     my_family = GenericNormalDistribution(dimension=9)
 
-    my_upsilons = jnp.vectorize(my_family.get_upsilon, signature="(n),(n,n)->(m)")(means, covs)
-    output = {'res': my_upsilons, 'times': times}
+    my_etas = jnp.vectorize(my_family.get_eta, signature="(n),(n,n)->(m)")(means, covs)
+    output = {'res': my_etas, 'times': times}
 
     pickle.dump(output, open("xp2.pkl", "wb"))
 

@@ -27,14 +27,14 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
     # Mean Field Gaussian Variational Family
     my_variational_family = GenericMeanFieldNormalDistribution(dimension=dim)
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr_schedule, 'residual': target_residual_schedule}
     desc = "MNIST dataset, heuristic, mf. Gaussian, Nicolas"
 
     @jax.vmap
     def f(key):
-        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, eta_init, n_iter, n_samples,
                                                 lr_schedule=lr_schedule,
                                                 target_residual_schedule=target_residual_schedule,
                                                 return_all=False)

@@ -27,11 +27,11 @@ def experiment(keys, n_iter, n_samples, lr, OUTPUT_PATH="./output"):
     sufficient_statistic = my_variational_family.sufficient_statistic
     sanity = my_variational_family.sanity
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.identity(dim))
 
     @jax.vmap
     def f(key):
-        return ngd_on_gaussian_kl(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+        return ngd_on_gaussian_kl(key, tgt_log_density, eta_init, n_iter, n_samples,
                                   lr_schedule=lr, sanity=sanity)
 
     res = f(keys)

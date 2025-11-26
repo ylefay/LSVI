@@ -26,7 +26,7 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
     # Gaussian Variational Family
     my_variational_family = GenericNormalDistribution(dimension=dim)
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.identity(dim))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.identity(dim))
 
     PARAMS = {'n_iter': n_iter, 'n_samples': n_samples, 'lr': lr_schedule, 'residual': target_residual_schedule}
     desc = "PIMA dataset, heuristic, full cov. Gaussian, Nicolas"
@@ -35,7 +35,7 @@ def experiment(keys, n_samples=100000, n_iter=100, lr_schedule=None, target_resi
     #        f"{OUTPUT_PATH}/heuristic_gaussian_Nicolas_{n_iter}_{n_samples}_{title_seq}_{OP_key}_u{target_residual_schedule.at[0].get()}.pkl"):
     @jax.vmap
     def f(key):
-        res, res_all = gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples, lr_schedule=lr_schedule,
+        res, res_all = gaussian_lsvi(key, tgt_log_density, eta_init, n_iter, n_samples, lr_schedule=lr_schedule,
                                      target_residual_schedule=target_residual_schedule,
                                      return_all=False)
         return res, res_all

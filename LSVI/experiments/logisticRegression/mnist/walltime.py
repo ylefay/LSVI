@@ -35,10 +35,10 @@ def experiment_mf_lsvi(key, n_samples, n_iter, lr_schedule=None, target_residual
     # Mean Field Gaussian Variational Family
     my_variational_family = GenericMeanFieldNormalDistribution(dimension=dim)
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
 
     def f(key):
-        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res, res_all = mean_field_gaussian_lsvi(key, tgt_log_density, eta_init, n_iter, n_samples,
                                                 lr_schedule=lr_schedule,
                                                 target_residual_schedule=target_residual_schedule,
                                                 return_all=False)
@@ -100,10 +100,10 @@ def experiment_ngd(key, n_iter, n_samples, lr):
     sufficient_statistic = my_variational_family.sufficient_statistic
     sanity = my_variational_family.sanity
 
-    upsilon_init = my_variational_family.get_upsilon(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
+    eta_init = my_variational_family.get_eta(jnp.zeros(dim), jnp.ones(dim) * jnp.exp(-2))
 
     def f(key):
-        res = ngd(key, sampling, sufficient_statistic, tgt_log_density, upsilon_init, n_iter, n_samples,
+        res = ngd(key, sampling, sufficient_statistic, tgt_log_density, eta_init, n_iter, n_samples,
                   lr_schedule=lr, sanity=sanity)
         return res
 

@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
                 @jax.vmap
                 def wrapper_truncated_gaussian_loss(key, theta):
-                    # Wrapper for the loss -ELBO(q_\upsilon \mid \pi) where q_\upsilon is a full-rank Gaussian distribution
+                    # Wrapper for the loss -ELBO(q_\eta \mid \pi) where q_\eta is a full-rank Gaussian distribution
                     return truncated_mf_gaussian_loss(OP_key=key, theta=theta, truncated_gaussian=truncated_gaussian,
                                                       tgt_log_density=tgt_log_density, n_samples_for_loss=int(1e2))
 

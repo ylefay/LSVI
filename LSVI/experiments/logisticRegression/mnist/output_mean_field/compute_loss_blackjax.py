@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     @jax.vmap
     def wrapper_gaussian_loss(key, res):
-        # Wrapper for the loss -ELBO(q_\upsilon \mid \pi) where q_\upsilon is a full-rank Gaussian distribution
+        # Wrapper for the loss -ELBO(q_\eta \mid \pi) where q_\eta is a full-rank Gaussian distribution
         locs = res[0]
         sigmassq = jnp.exp(res[1])
         theta = mfg_gaussian.get_theta(locs, sigmassq)
