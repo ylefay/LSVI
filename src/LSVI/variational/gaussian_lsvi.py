@@ -97,12 +97,13 @@ def gaussian_lsvi(OP_key: jax.Array, tgt_log_density: Callable, eta_init: jnp.nd
         D, V = jax.scipy.linalg.eigh(current_cov)
         sqrtm = (V * jnp.sqrt(D)) @ V.T
         samples = sampling(key)
-        y = vmapped_tgt_log_density(current_mean[jnp.newaxis, :] + samples @ sqrtm)
+        transformed_samples = current_mean[jnp.newaxis, :] + samples @ sqrtm
+        y = vmapped_tgt_log_density(transformed_samples)
         X = modified_statistic(samples)
         next_gamma_tilde_tilde = X.T @ y / n_samples  # OLS(X, y) works well..
         next_gamma = from_gammatildetilde_to_gamma(next_gamma_tilde_tilde)
         next_eta = from_gamma_to_eta(current_mean, sqrtm, next_gamma)
-        lr, residual = momentum_backtracking(lr, eta, next_eta, y, statistic(samples), target_residual)
+        lr, residual = momentum_backtracking(lr, eta, next_eta, y, statistic(transformed_samples), target_residual)
         next_eta = next_eta * lr + (1 - lr) * eta
         return next_eta, next_gamma_tilde_tilde, residual
 

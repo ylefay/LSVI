@@ -52,11 +52,12 @@ def mean_field_gaussian_lsvi(OP_key: jax.Array, tgt_log_density: Callable, eta_i
         theta = eta.at[:-1].get()
         current_mean, current_vec_diag_cov = normal.get_mean_cov(theta)
         samples = sampling(key)
-        y = vmapped_tgt_log_density(current_mean + jnp.sqrt(current_vec_diag_cov) * samples)
+        transformed_samples = current_mean + jnp.sqrt(current_vec_diag_cov) * samples
+        y = vmapped_tgt_log_density(transformed_samples)
         X = modified_statistic(samples)
         next_gamma = X.T @ y / n_samples
         next_eta = from_gamma_to_eta(current_mean, current_vec_diag_cov, next_gamma)
-        lr, residual = momentum_backtracking(lr, eta, next_eta, y, statistic(samples), target_residual)
+        lr, residual = momentum_backtracking(lr, eta, next_eta, y, statistic(transformed_samples), target_residual)
         next_eta = next_eta * lr + (1 - lr) * eta
         return next_eta, next_gamma, residual
 
