@@ -1478,3 +1478,7 @@ cython_debug/
 !/LSVI/experiments/syntheticLikelihood/fowlers-toad-move/
 
 rapport/main.pdf
+# Large pickled experiment results (>2MB, kept locally, not versioned)
+/src/LSVI/experiments/bayesianSelectionVariable/concrete/output_SMC/smc_100000_1000_100_3.pkl
+/src/LSVI/experiments/logisticRegression/mnist/output_mean_field/bj.pkl
+/src/LSVI/experiments/logisticRegression/sonar_logistic_regression/ADVI/output_mfg/OLD_PKL_CSV_IPYNB/res_mfg_advi_100000.pkl
